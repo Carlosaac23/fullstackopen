@@ -1,9 +1,19 @@
+import { useState } from "react";
+
 export default function App() {
-  const friends = ["Peter", "Maya"];
+  const [value, setValue] = useState(10);
+
+  const setToValue = (newValue) => {
+    console.log("value now", newValue);
+    setValue(newValue);
+  };
 
   return (
     <div>
-      <p>{friends.join(", ")}</p>
+      {value}
+      <button onClick={() => setToValue(1000)}>thousand</button>
+      <button onClick={() => setToValue(0)}>reset</button>
+      <button onClick={() => setToValue(value + 1)}>increment</button>
     </div>
   );
 }
