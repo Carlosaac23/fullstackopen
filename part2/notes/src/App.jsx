@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Note from "./components/note";
-import axios from "axios";
+
+import { getAll, create, update } from "./services/notes";
 
 export default function App() {
   const [notes, setNotes] = useState([]);
@@ -8,35 +9,35 @@ export default function App() {
   const [showAll, setShowAll] = useState(true);
 
   useEffect(() => {
-    console.log("effect");
-
-    const eventHandler = (res) => {
-      console.log("promise fulfilled");
-      setNotes(res.data);
-    };
-
-    const promise = axios.get("http://localhost:4000/notes");
-    promise.then(eventHandler);
+    getAll().then((notes) => setNotes(notes));
   }, []);
-  console.log("render", notes.length, "notes");
 
   const addNote = (e) => {
     e.preventDefault();
 
     const noteObject = {
-      id: notes.length + 1,
       content: newNote,
       important: Math.random() < 0.5,
     };
 
-    // setNotes(notes.concat(noteObject));
-    setNotes([...notes, noteObject]);
-    setNewNote("");
+    create(noteObject).then((returnedNote) => {
+      // setNotes(notes.concat(data))
+      setNotes([...notes, returnedNote]);
+      setNewNote("");
+    });
   };
 
-  const handleNoteChange = (e) => {
-    console.log(e.target.value);
-    setNewNote(e.target.value);
+  const handleNoteChange = (e) => setNewNote(e.target.value);
+  const toggleImportanceOf = (id) => {
+    const note = notes.find((note) => note.id === id);
+    const updatedNote = { ...note, important: !note.important };
+
+    update(id, updatedNote)
+      .then((returnedNote) => setNotes(notes.map((note) => (note.id === id ? returnedNote : note))))
+      .catch((error) => {
+        alert(`The note ${note.content} was already deleted from server`);
+        setNotes(notes.filter((note) => note.id !== id));
+      });
   };
 
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
@@ -49,7 +50,7 @@ export default function App() {
       </div>
       <ul>
         {notesToShow.map((note) => (
-          <Note key={note.id} note={note} />
+          <Note key={note.id} note={note} toggleImportance={() => toggleImportanceOf(note.id)} />
         ))}
       </ul>
 

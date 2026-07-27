@@ -8,12 +8,38 @@
     {
       "id": "2",
       "content": "Browser can execute only JavaScript",
-      "important": false
+      "important": true
     },
     {
       "id": "3",
       "content": "GET and POST are the most important methods of HTTP protocol",
       "important": true
+    },
+    {
+      "content": "I love Vercel",
+      "important": true,
+      "id": "ls2qPcojc7w"
+    },
+    {
+      "content": "Testing",
+      "important": true,
+      "id": "pmbjnLduT78"
+    },
+    {
+      "content": "I love programming",
+      "important": true,
+      "id": "ilaRkXkAGWQ"
+    },
+    {
+      "content": "POST is used to add data",
+      "important": true,
+      "id": "5fUaunqwyAo"
+    },
+    {
+      "content": "IA is going to kill us",
+      "important": true,
+      "id": "cakcuyJvmu0"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
