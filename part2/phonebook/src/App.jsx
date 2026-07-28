@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import Filter from "./components/filter";
 import PersonForm from "./components/person-form";
 import People from "./components/people";
-import axios from "axios";
+
+import { getAll, create } from "./services/phonebook";
 
 export default function App() {
   const [people, setPeople] = useState([]);
@@ -12,31 +13,33 @@ export default function App() {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:4000/people").then((res) => setPeople(res.data));
+    getAll().then((people) => setPeople(people));
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const nameObject = {
+    const contactObject = {
       name: newName,
       phone: newPhone,
-      id: people.length + 1,
     };
 
-    const personAlreadyExists = people.find((person) => person.name === nameObject.name);
+    const personAlreadyExists = people.find((person) => person.name === contactObject.name);
 
     if (personAlreadyExists) {
-      alert(`${nameObject.name} is already added to phonebook`);
+      alert(`${contactObject.name} is already added to phonebook`);
 
       setNewName("");
       setNewPhone("");
       return;
     }
 
-    setPeople([...people, nameObject]);
-    setNewName("");
-    setNewPhone("");
+    create(contactObject).then((returnedContact) => {
+      // setPeople(people.concat(returnedContact));
+      setPeople([...people, returnedContact]);
+      setNewName("");
+      setNewPhone("");
+    });
   };
 
   const handleNameOnChange = ({ target }) => setNewName(target.value);
