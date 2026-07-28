@@ -1,0 +1,77 @@
+import express from "express";
+const app = express();
+
+app.use(express.json());
+
+let notes = [
+  {
+    id: "1",
+    content: "HTML is easy",
+    important: true,
+  },
+  {
+    id: "2",
+    content: "Browser can execute only JavaScript",
+    important: false,
+  },
+  {
+    id: "3",
+    content: "GET and POST are the most important methods of HTTP protocol",
+    important: true,
+  },
+];
+
+app.get("/", (req, res) => {
+  res.send("<h1>Hello world</h1>");
+});
+
+app.get("/api/notes", (req, res) => {
+  res.json(notes);
+});
+
+app.get("/api/notes/:id", (req, res) => {
+  const id = req.params.id;
+  const note = notes.find((note) => note.id === id);
+
+  if (!note) {
+    res.status(404).end();
+  }
+
+  res.json(note);
+});
+
+app.post("/api/notes", (req, res) => {
+  const body = req.body;
+
+  if (!body.content) {
+    return res.status(400).json({
+      error: "content missing",
+    });
+  }
+
+  const note = {
+    id: String(notes.length + 1),
+    content: body.content,
+    important: body.important || false,
+  };
+
+  notes = [...notes, note];
+  res.json(note);
+});
+
+app.delete("/api/notes/:id", (req, res) => {
+  const id = req.params.id;
+  const note = notes.find((note) => note.id === id);
+
+  if (!note) {
+    res.status(404).end();
+  }
+
+  notes = notes.filter((note) => note.id !== id);
+  res.status(204).end();
+});
+
+const PORT = 4000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
