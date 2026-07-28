@@ -4,7 +4,7 @@ import Filter from "./components/filter";
 import PersonForm from "./components/person-form";
 import People from "./components/people";
 
-import { getPeople, createContact, deleteContact } from "./services/phonebook";
+import { getPeople, createContact, updateContact, deleteContact } from "./services/phonebook";
 
 export default function App() {
   const [people, setPeople] = useState([]);
@@ -27,7 +27,19 @@ export default function App() {
     const personAlreadyExists = people.find((person) => person.name === contactObject.name);
 
     if (personAlreadyExists) {
-      alert(`${contactObject.name} is already added to phonebook`);
+      const wantReplaceOldNumber = window.confirm(
+        `${contactObject.name} is already added to phonebook, replace the old number with a new one?`,
+      );
+
+      if (!wantReplaceOldNumber) return;
+
+      const updatedContact = { ...personAlreadyExists, phone: newPhone };
+
+      updateContact(personAlreadyExists.id, updatedContact).then((returnedContact) =>
+        setPeople(
+          people.map((person) => (person.id === returnedContact.id ? returnedContact : person)),
+        ),
+      );
 
       setNewName("");
       setNewPhone("");

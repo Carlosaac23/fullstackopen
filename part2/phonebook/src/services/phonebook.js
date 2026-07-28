@@ -11,6 +11,11 @@ export function createContact(newObject) {
   return req.then(({ data }) => data);
 }
 
+export function updateContact(id, newObject) {
+  const req = axios.put(`${baseUrl}/${id}`, newObject);
+  return req.then(({ data }) => data);
+}
+
 export function deleteContact(id) {
   const req = axios.delete(`${baseUrl}/${id}`);
   return req.then(({ data }) => data);
