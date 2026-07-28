@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Filter from "./components/filter";
 import PersonForm from "./components/person-form";
 import People from "./components/people";
+import Notification from "./components/notification";
 
 import { getPeople, createContact, updateContact, deleteContact } from "./services/phonebook";
 
@@ -11,6 +12,7 @@ export default function App() {
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [filter, setFilter] = useState("");
+  const [noti, setNoti] = useState(null);
 
   useEffect(() => {
     getPeople().then((people) => setPeople(people));
@@ -35,20 +37,42 @@ export default function App() {
 
       const updatedContact = { ...personAlreadyExists, phone: newPhone };
 
-      updateContact(personAlreadyExists.id, updatedContact).then((returnedContact) =>
-        setPeople(
-          people.map((person) => (person.id === returnedContact.id ? returnedContact : person)),
-        ),
-      );
+      updateContact(personAlreadyExists.id, updatedContact)
+        .then((returnedContact) => {
+          setPeople(
+            people.map((person) => (person.id === returnedContact.id ? returnedContact : person)),
+          );
 
-      setNewName("");
-      setNewPhone("");
+          // Notification
+          setNoti({ message: `Updated ${personAlreadyExists.name} phone` });
+          setTimeout(() => setNoti(null), 3000);
+
+          setNewName("");
+          setNewPhone("");
+        })
+        .catch((error) => {
+          setNoti({
+            message: `Information of ${personAlreadyExists.name} has already been removed from server`,
+            type: "failed",
+          });
+          setTimeout(() => setNoti(null), 3000);
+
+          setPeople(people.filter((person) => person.id !== personAlreadyExists.id));
+
+          setNewName("");
+          setNewPhone("");
+        });
+
       return;
     }
 
     createContact(contactObject).then((returnedContact) => {
-      // setPeople(people.concat(returnedContact));
       setPeople([...people, returnedContact]);
+
+      // Notification
+      setNoti({ message: `Added ${returnedContact.name}` });
+      setTimeout(() => setNoti(null), 3000);
+
       setNewName("");
       setNewPhone("");
     });
@@ -75,6 +99,7 @@ export default function App() {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification {...noti} />
       <Filter filter={filter} onChange={handleFilterOnChange} />
 
       <PersonForm
