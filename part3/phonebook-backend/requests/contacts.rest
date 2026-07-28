@@ -1,0 +1,24 @@
+# Get contacts
+GET http://localhost:4000/api/contacts
+
+###
+# Info
+GET http://localhost:4000/info
+
+###
+# Get contact
+GET http://localhost:4000/api/contacts/e977544b-397f-468d-b3f5-03882f6e6f92
+
+###
+# Delete contact
+DELETE http://localhost:4000/api/contacts/e977544b-397f-468d-b3f5-03882f6e6f92
+
+###
+# Create contact
+POST http://localhost:4000/api/contacts
+Content-Type: application/json
+
+{
+  "name": "Carlos Acosta",
+  "phone": "3007410161"
+}
