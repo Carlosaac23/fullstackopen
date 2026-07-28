@@ -4,7 +4,7 @@ import Filter from "./components/filter";
 import PersonForm from "./components/person-form";
 import People from "./components/people";
 
-import { getAll, create } from "./services/phonebook";
+import { getPeople, createContact, deleteContact } from "./services/phonebook";
 
 export default function App() {
   const [people, setPeople] = useState([]);
@@ -13,7 +13,7 @@ export default function App() {
   const [filter, setFilter] = useState("");
 
   useEffect(() => {
-    getAll().then((people) => setPeople(people));
+    getPeople().then((people) => setPeople(people));
   }, []);
 
   const handleSubmit = (e) => {
@@ -34,12 +34,23 @@ export default function App() {
       return;
     }
 
-    create(contactObject).then((returnedContact) => {
+    createContact(contactObject).then((returnedContact) => {
       // setPeople(people.concat(returnedContact));
       setPeople([...people, returnedContact]);
       setNewName("");
       setNewPhone("");
     });
+  };
+
+  const handleDelete = (id) => {
+    const contact = people.find((person) => person.id === id);
+    const isConfirm = window.confirm(`Delete ${contact.name}?`);
+
+    if (!isConfirm) return;
+
+    deleteContact(id).then((deletedContact) =>
+      setPeople(people.filter((person) => person.id !== deletedContact.id)),
+    );
   };
 
   const handleNameOnChange = ({ target }) => setNewName(target.value);
@@ -62,7 +73,7 @@ export default function App() {
         handlePhoneOnChange={handlePhoneOnChange}
       />
 
-      <People people={peopleToShow} />
+      <People people={peopleToShow} handleDelete={handleDelete} />
     </div>
   );
 }
