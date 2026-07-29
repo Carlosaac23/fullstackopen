@@ -1,31 +1,9 @@
 import { randomUUID } from "node:crypto";
+import { Contact } from "./models/contact.js";
 
 import express from "express";
 import morgan from "morgan";
 const app = express();
-
-let contacts = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    phone: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    phone: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    phone: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    phone: "39-23-6423122",
-  },
-];
 
 morgan.token("body", (req, res) => {
   return JSON.stringify(req.body);
@@ -35,7 +13,9 @@ app.use(express.json());
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"));
 
 app.get("/api/contacts", (req, res) => {
-  res.json(contacts);
+  Contact.find({}).then((contacts) => {
+    res.json(contacts);
+  });
 });
 
 app.get("/info", (req, res) => {
@@ -56,20 +36,20 @@ app.post("/api/contacts", (req, res) => {
     return res.status(400).json({ error: "missing name or phone" });
   }
 
-  const nameAlreadyExists = contacts.find((contact) => contact.name === name);
+  // const nameAlreadyExists = contacts.find((contact) => contact.name === name);
 
-  if (nameAlreadyExists) {
-    return res.status(400).json({ error: "name must be unique" });
-  }
+  // if (nameAlreadyExists) {
+  //   return res.status(400).json({ error: "name must be unique" });
+  // }
 
-  const contact = {
-    id: randomUUID(),
+  const contact = new Contact({
     name,
     phone,
-  };
+  });
 
-  contacts = [...contacts, contact];
-  res.status(201).json(contact);
+  contact.save().then((savedContact) => {
+    res.status(201).json(savedContact);
+  });
 });
 
 app.get("/api/contacts/:id", (req, res) => {
@@ -95,7 +75,7 @@ app.delete("/api/contacts/:id", (req, res) => {
   res.status(204).end();
 });
 
-const PORT = 4000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server working at http://localhost:${PORT}`);
 });

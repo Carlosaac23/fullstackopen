@@ -19,6 +19,6 @@ POST http://localhost:4000/api/contacts
 Content-Type: application/json
 
 {
-  "name": "Carlos Acosta",
-  "phone": "3007410161"
+  "name": "Pedro Pablo",
+  "phone": "123456789"
 }
