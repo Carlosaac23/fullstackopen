@@ -5,7 +5,7 @@ import PersonForm from "./components/person-form";
 import People from "./components/people";
 import Notification from "./components/notification";
 
-import { getPeople, createContact, updateContact, deleteContact } from "./services/phonebook";
+import { getContacts, createContact, updateContact, deleteContact } from "./services/phonebook";
 
 export default function App() {
   const [people, setPeople] = useState([]);
@@ -15,7 +15,7 @@ export default function App() {
   const [noti, setNoti] = useState(null);
 
   useEffect(() => {
-    getPeople().then((people) => setPeople(people));
+    getContacts().then((people) => setPeople(people));
   }, []);
 
   const handleSubmit = (e) => {

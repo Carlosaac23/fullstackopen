@@ -1,7 +1,7 @@
 import axios from "axios";
-const baseUrl = "http://localhost:4000/people";
+const baseUrl = "/api/contacts";
 
-export function getPeople() {
+export function getContacts() {
   const req = axios(baseUrl);
   return req.then(({ data }) => data);
 }
