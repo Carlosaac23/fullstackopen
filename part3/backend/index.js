@@ -1,8 +1,6 @@
 import express from "express";
 const app = express();
 
-app.use(express.json());
-
 let notes = [
   {
     id: "1",
@@ -20,6 +18,17 @@ let notes = [
     important: true,
   },
 ];
+
+function requestLogger(req, res, next) {
+  console.log("Method:", req.method);
+  console.log("Path:  ", req.path);
+  console.log("Body:  ", req.body);
+  console.log("---");
+  next();
+}
+
+app.use(express.json());
+app.use(requestLogger);
 
 app.get("/", (req, res) => {
   res.send("<h1>Hello world</h1>");
@@ -70,6 +79,12 @@ app.delete("/api/notes/:id", (req, res) => {
   notes = notes.filter((note) => note.id !== id);
   res.status(204).end();
 });
+
+function unknownEndpoint(req, res) {
+  res.status(404).send({ error: "unknown endpoint" });
+}
+
+app.use(unknownEndpoint);
 
 const PORT = 4000;
 app.listen(PORT, () => {
