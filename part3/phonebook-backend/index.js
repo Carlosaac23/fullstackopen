@@ -1,9 +1,8 @@
 import { randomUUID } from "node:crypto";
 
 import express from "express";
+import morgan from "morgan";
 const app = express();
-
-app.use(express.json());
 
 let contacts = [
   {
@@ -27,6 +26,13 @@ let contacts = [
     phone: "39-23-6423122",
   },
 ];
+
+morgan.token("body", (req, res) => {
+  return JSON.stringify(req.body);
+});
+
+app.use(express.json());
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"));
 
 app.get("/api/contacts", (req, res) => {
   res.json(contacts);
@@ -63,7 +69,7 @@ app.post("/api/contacts", (req, res) => {
   };
 
   contacts = [...contacts, contact];
-  res.json(contact);
+  res.status(201).json(contact);
 });
 
 app.get("/api/contacts/:id", (req, res) => {

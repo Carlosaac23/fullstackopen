@@ -7,11 +7,11 @@ GET http://localhost:4000/info
 
 ###
 # Get contact
-GET http://localhost:4000/api/contacts/e977544b-397f-468d-b3f5-03882f6e6f92
+GET http://localhost:4000/api/contacts/3
 
 ###
 # Delete contact
-DELETE http://localhost:4000/api/contacts/e977544b-397f-468d-b3f5-03882f6e6f92
+DELETE http://localhost:4000/api/contacts/3
 
 ###
 # Create contact
