@@ -3,7 +3,7 @@ GET http://localhost:4000/api/notes
 
 ###
 # Get note
-GET http://localhost:4000/api/notes/1
+GET http://localhost:4000/api/notes/6a6a84750683e23cec4d5612
 
 ###
 # Create note
@@ -11,12 +11,13 @@ POST http://localhost:4000/api/notes
 Content-Type: application/json
 
 {
-  "content": "Hola desde REST Client"
+  "content": "Hi from REST Client",
+  "important": true
 }
 
 ###
 # Delete note
-DELETE http://localhost:4000/api/notes/4
+DELETE http://localhost:4000/api/notes/6a6a850e6f90e1dc9aa99851
 
 ###
 # Unknown endpoint

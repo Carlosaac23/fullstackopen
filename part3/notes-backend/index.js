@@ -1,4 +1,5 @@
 import express from "express";
+import { Note } from "./models/note.js";
 
 const app = express();
 
@@ -38,18 +39,17 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/notes", (req, res) => {
-  res.json(notes);
+  Note.find({}).then((notes) => {
+    res.json(notes);
+  });
 });
 
 app.get("/api/notes/:id", (req, res) => {
   const id = req.params.id;
-  const note = notes.find((note) => note.id === id);
 
-  if (!note) {
-    res.status(404).end();
-  }
-
-  res.json(note);
+  Note.findById(id).then((note) => {
+    res.json(note);
+  });
 });
 
 app.post("/api/notes", (req, res) => {
@@ -61,14 +61,14 @@ app.post("/api/notes", (req, res) => {
     });
   }
 
-  const note = {
-    id: String(notes.length + 1),
+  const note = new Note({
     content: body.content,
     important: body.important || false,
-  };
+  });
 
-  notes = [...notes, note];
-  res.json(note);
+  note.save().then((savedNote) => {
+    res.json(savedNote);
+  });
 });
 
 app.delete("/api/notes/:id", (req, res) => {
@@ -89,7 +89,7 @@ function unknownEndpoint(req, res) {
 
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
