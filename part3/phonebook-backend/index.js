@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { Contact } from "./models/contact.js";
 
 import express from "express";
@@ -29,7 +28,19 @@ app.get("/info", (req, res) => {
   res.send(result);
 });
 
-app.post("/api/contacts", (req, res) => {
+app.get("/api/contacts/:id", (req, res, next) => {
+  const { id } = req.params;
+
+  Contact.findById(id)
+    .then((contact) => {
+      if (!contact) return res.status(404).json({ error: "Contact not found" });
+
+      res.json(contact);
+    })
+    .catch((error) => next(error));
+});
+
+app.post("/api/contacts", (req, res, next) => {
   const { name, phone } = req.body;
 
   if (!name || !phone) {
@@ -47,33 +58,54 @@ app.post("/api/contacts", (req, res) => {
     phone,
   });
 
-  contact.save().then((savedContact) => {
-    res.status(201).json(savedContact);
-  });
+  contact
+    .save()
+    .then((savedContact) => {
+      res.status(201).json(savedContact);
+    })
+    .catch((error) => next(error));
 });
 
-app.get("/api/contacts/:id", (req, res) => {
+app.put("/api/contacts/:id", (req, res, next) => {
   const { id } = req.params;
-  const contact = contacts.find((contact) => contact.id === id);
+  const { phone } = req.body;
 
-  if (!contact) {
-    res.status(404).end();
+  Contact.findById(id)
+    .then((contact) => {
+      if (!contact) return res.status(404).json({ error: "Contact not found" });
+
+      contact.phone = phone;
+
+      return contact.save().then((updatedContact) => {
+        res.json(updatedContact);
+      });
+    })
+    .catch((error) => next(error));
+});
+
+app.delete("/api/contacts/:id", (req, res, next) => {
+  const { id } = req.params;
+
+  Contact.findByIdAndDelete(id)
+    .then((deletedContact) => {
+      if (!deletedContact) return res.status(404).json({ error: "Contact not found" });
+
+      res.status(204).end();
+    })
+    .catch((error) => next(error));
+});
+
+function errorHandler(error, req, res, next) {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return res.status(400).send({ error: "malformatted id" });
   }
 
-  res.json(contact);
-});
+  next(error);
+}
 
-app.delete("/api/contacts/:id", (req, res) => {
-  const { id } = req.params;
-  const contact = contacts.find((contact) => contact.id === id);
-
-  if (!contact) {
-    res.status(404).end();
-  }
-
-  contacts = contacts.filter((contact) => contact.id !== id);
-  res.status(204).end();
-});
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
