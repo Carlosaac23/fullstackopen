@@ -13,7 +13,7 @@ POST {{baseUrl}}/api/notes
 Content-Type: application/json
 
 {
-  "content": "Hi from REST Client",
+  "content": "Hi",
   "important": true
 }
 
