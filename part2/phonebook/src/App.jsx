@@ -66,16 +66,23 @@ export default function App() {
       return;
     }
 
-    createContact(contactObject).then((returnedContact) => {
-      setPeople([...people, returnedContact]);
+    createContact(contactObject)
+      .then((returnedContact) => {
+        setPeople([...people, returnedContact]);
 
-      // Notification
-      setNoti({ message: `Added ${returnedContact.name}` });
-      setTimeout(() => setNoti(null), 3000);
+        // Notification
+        setNoti({ message: `Added ${returnedContact.name}` });
+        setTimeout(() => setNoti(null), 3000);
 
-      setNewName("");
-      setNewPhone("");
-    });
+        setNewName("");
+        setNewPhone("");
+      })
+      .catch((error) => {
+        const errorMessage = error.response.data.error;
+
+        setNoti({ message: errorMessage, type: "failed" });
+        setTimeout(() => setNoti(null), 3000);
+      });
   };
 
   const handleDelete = (id) => {
@@ -84,9 +91,7 @@ export default function App() {
 
     if (!isConfirm) return;
 
-    deleteContact(id).then((deletedContact) =>
-      setPeople(people.filter((person) => person.id !== deletedContact.id)),
-    );
+    deleteContact(id).then(() => setPeople(people.filter((person) => person.id !== id)));
   };
 
   const handleNameOnChange = ({ target }) => setNewName(target.value);

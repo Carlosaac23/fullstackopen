@@ -22,7 +22,7 @@ Content-Type: application/json
 
 {
   "name": "Pedro Pablo",
-  "phone": "123456789"
+  "phone": "123-4567890"
 }
 
 ###

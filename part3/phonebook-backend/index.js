@@ -8,6 +8,7 @@ morgan.token("body", (req, res) => {
   return JSON.stringify(req.body);
 });
 
+app.use(express.static("dist"));
 app.use(express.json());
 app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"));
 
@@ -46,12 +47,6 @@ app.post("/api/contacts", (req, res, next) => {
   if (!name || !phone) {
     return res.status(400).json({ error: "missing name or phone" });
   }
-
-  // const nameAlreadyExists = contacts.find((contact) => contact.name === name);
-
-  // if (nameAlreadyExists) {
-  //   return res.status(400).json({ error: "name must be unique" });
-  // }
 
   const contact = new Contact({
     name,
@@ -100,6 +95,8 @@ function errorHandler(error, req, res, next) {
 
   if (error.name === "CastError") {
     return res.status(400).send({ error: "malformatted id" });
+  } else if (error.name === "ValidationError") {
+    return res.status(400).json({ error: error.message });
   }
 
   next(error);
