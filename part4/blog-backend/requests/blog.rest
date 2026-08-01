@@ -1,0 +1,14 @@
+# Get blogs
+GET http://localhost:4000/api/blogs
+
+###
+# Create blog
+POST http://localhost:4000/api/blogs
+Content-Type: application/json
+
+{
+  "title": "My first blog",
+  "author": "Carlos Acosta",
+  "url": "",
+  "likes": 0
+}
