@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import { test, describe } from 'node:test'
 
-import { reverse } from '../utils/for_testing.js'
+import { reverse } from '../utils/for-testing.js'
 
 describe('reverse', () => {
   test('reverse of a', () => {

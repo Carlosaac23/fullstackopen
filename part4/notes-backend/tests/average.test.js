@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import { test, describe } from 'node:test'
 
-import { average } from '../utils/for_testing.js'
+import { average } from '../utils/for-testing.js'
 
 describe('average', () => {
   test('of one value is the value itself', () => {

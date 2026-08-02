@@ -1,7 +1,11 @@
 export function infoLog(...params) {
-  console.log(...params)
+  if (process.env.NODE_ENV !== 'test') {
+    console.log(...params)
+  }
 }
 
 export function errorLog(...params) {
-  console.error(...params)
+  if (process.env.NODE_ENV !== 'test') {
+    console.error(...params)
+  }
 }
