@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "node --watch --env-file-if-exists=.env index.js",
+    "test": "node --test",
     "lint": "eslint .",
     "fmt": "oxfmt"
   },
