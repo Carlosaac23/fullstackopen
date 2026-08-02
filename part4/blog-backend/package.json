@@ -11,6 +11,7 @@
     "start": "node index.js",
     "dev": "node --watch --env-file-if-exists=.env index.js",
     "lint": "eslint .",
+    "test": "node --test",
     "fmt": "oxfmt"
   },
   "dependencies": {
