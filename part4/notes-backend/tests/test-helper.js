@@ -1,4 +1,5 @@
 import { Note } from '../models/note.js'
+import { User } from '../models/user.js'
 
 export const initialNotes = [
   {
@@ -22,4 +23,9 @@ export async function nonExistingId() {
 export async function notesInDb() {
   const notes = await Note.find({})
   return notes.map((note) => note.toJSON())
+}
+
+export async function usersInDb() {
+  const users = await User.find({})
+  return users.map((user) => user.toJSON())
 }

@@ -5,7 +5,7 @@ import supertest from 'supertest'
 
 import app from '../app.js'
 import { Note } from '../models/note.js'
-import { initialNotes, notesInDb, nonExistingId } from './test-helper.js'
+import { initialNotes, notesInDb, nonExistingId, usersInDb } from './test-helper.js'
 
 const api = supertest(app)
 
@@ -63,9 +63,13 @@ describe('when there is initially some notes saved', () => {
 
   describe('addition of a new note', () => {
     test('a valid note can be added', async () => {
+      const usersAtStart = await usersInDb()
+      const user = usersAtStart[0]
+
       const newNote = {
         content: 'async/await simplifies making async calls',
         important: true,
+        userId: user.id,
       }
 
       await api
