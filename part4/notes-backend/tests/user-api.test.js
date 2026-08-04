@@ -5,7 +5,7 @@ import { test, beforeEach, after, describe } from 'node:test'
 import supertest from 'supertest'
 
 import app from '../app.js'
-import { User } from '../models/user.js'
+import User from '../models/user.js'
 import { usersInDb } from './test-helper.js'
 
 const api = supertest(app)

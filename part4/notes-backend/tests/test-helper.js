@@ -1,5 +1,5 @@
-import { Note } from '../models/note.js'
-import { User } from '../models/user.js'
+import Note from '../models/note.js'
+import User from '../models/user.js'
 
 export const initialNotes = [
   {

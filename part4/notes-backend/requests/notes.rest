@@ -11,20 +11,20 @@ GET {{baseUrl}}/api/notes/6a6a84750683e23cec4d5612
 # Create note
 POST {{baseUrl}}/api/notes
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcmxvc2FhYzIzIiwiaWQiOiI2YTcxMGU0YjFhODU0MTBhNDI2MWVkOWMiLCJpYXQiOjE3ODU4NTU3OTZ9.J3XEV4h9F9ovbtOwuXQhZHmc5Wi99JI9ZAYb_GVSa3E
 
 {
-  "content": "I do like her",
-  "important": false,
-  "userId": "6a710e8d1a85410a4261ed9d"
+  "content": "I do like watching movies",
+  "important": true
 }
 
 ###
 # Update note
-PUT {{baseUrl}}/api/notes/6a6a84750683e23cec4d5612
+PUT {{baseUrl}}/api/notes/6a71ff5207a86d9776e25018
 Content-Type: application/json
 
 {
-  "content": "MongoDB is really God!"
+  "content": "I do like watching soccer!"
 }
 
 ###

@@ -1,6 +1,7 @@
 import express from 'express'
 import mongoose from 'mongoose'
 
+import loginRouter from './controllers/login.js'
 import notesRouter from './controllers/notes.js'
 import usersRouter from './controllers/users.js'
 import { MONGODB_URI } from './utils/config.js'
@@ -24,6 +25,7 @@ app.use(requestLogger)
 
 app.use('/api/notes', notesRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/login', loginRouter)
 
 app.use(unknownEndpoint)
 app.use(errorHandler)

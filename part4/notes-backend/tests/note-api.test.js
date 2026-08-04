@@ -4,7 +4,7 @@ import { test, after, beforeEach, describe } from 'node:test'
 import supertest from 'supertest'
 
 import app from '../app.js'
-import { Note } from '../models/note.js'
+import Note from '../models/note.js'
 import { initialNotes, notesInDb, nonExistingId, usersInDb } from './test-helper.js'
 
 const api = supertest(app)
@@ -66,15 +66,21 @@ describe('when there is initially some notes saved', () => {
       const usersAtStart = await usersInDb()
       const user = usersAtStart[0]
 
+      const loggedUser = await api
+        .post('/api/login')
+        .send({ username: user.username, password: 'password' })
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
       const newNote = {
         content: 'async/await simplifies making async calls',
         important: true,
-        userId: user.id,
       }
 
       await api
         .post('/api/notes')
         .send(newNote)
+        .set('Authorization', `Bearer ${loggedUser.body.token}`)
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
@@ -86,11 +92,24 @@ describe('when there is initially some notes saved', () => {
     })
 
     test('note without content is not added', async () => {
+      const usersAtStart = await usersInDb()
+      const user = usersAtStart[0]
+
+      const loggedUser = await api
+        .post('/api/login')
+        .send({ username: user.username, password: 'password' })
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
       const newNote = {
         important: true,
       }
 
-      await api.post('/api/notes').send(newNote).expect(400)
+      await api
+        .post('/api/notes')
+        .send(newNote)
+        .set('Authorization', `Bearer ${loggedUser.body.token}`)
+        .expect(400)
 
       const notesAtEnd = await notesInDb()
       assert.strictEqual(notesAtEnd.length, initialNotes.length)
