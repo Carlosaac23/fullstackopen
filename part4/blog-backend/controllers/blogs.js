@@ -1,7 +1,9 @@
 import { Router } from 'express'
+import jwt from 'jsonwebtoken'
 
 import { Blog } from '../models/blog.js'
 import User from '../models/user.js'
+import { JWT_SECRET } from '../utils/config.js'
 
 const blogsRouter = Router()
 
@@ -12,10 +14,12 @@ blogsRouter.get('/', async (req, res) => {
 })
 
 blogsRouter.post('/', async (req, res) => {
-  const { title, author, url, likes, userId } = req.body
+  const { title, author, url, likes } = req.body
+  const decodedToken = jwt.verify(req.token, JWT_SECRET)
 
-  const user = await User.findById(userId)
-  console.log('user', user)
+  if (!decodedToken.id) return res.status(401).json({ error: 'invalid token' })
+
+  const user = await User.findById(decodedToken.id)
 
   if (!user) return res.status(400).json({ error: 'userId missing or not valid' })
 
@@ -50,10 +54,22 @@ blogsRouter.put('/:id', async (req, res) => {
 
 blogsRouter.delete('/:id', async (req, res) => {
   const { id } = req.params
+  const decodedToken = jwt.verify(req.token, JWT_SECRET)
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: 'invalid token' })
+  }
 
-  const blogToDelete = await Blog.findByIdAndDelete(id)
+  const blog = await Blog.findById(id)
 
-  if (!blogToDelete) return res.status(404).json({ error: 'Blog not found' })
+  if (!blog) {
+    return res.status(404).json({ error: 'Blog not found' })
+  }
+
+  if (blog.user.toString() !== decodedToken.id) {
+    return res.status(403).json({ error: 'Not allowed to do this' })
+  }
+
+  await blog.deleteOne()
 
   res.status(204).end()
 })
