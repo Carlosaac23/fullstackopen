@@ -1,3 +1,7 @@
+import jwt from 'jsonwebtoken'
+
+import { JWT_SECRET } from './config.js'
+
 export function errorHandler(error, req, res, next) {
   console.error(error.message)
 
@@ -26,6 +30,24 @@ export function tokenExtractor(req, res, next) {
     req.token = authorization.replace('Bearer ', '')
   } else {
     req.token = null
+  }
+
+  next()
+}
+
+export function userExtractor(req, res, next) {
+  const authorization = req.get('authorization')
+
+  if (authorization && authorization.startsWith('Bearer ')) {
+    const token = authorization.replace('Bearer ', '')
+    const decodedToken = jwt.verify(token, JWT_SECRET)
+
+    req.user = {
+      id: decodedToken.id,
+      username: decodedToken.username,
+    }
+  } else {
+    req.user = null
   }
 
   next()

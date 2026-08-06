@@ -1,9 +1,11 @@
+@baseUrl = http://localhost:4000
+
 # Get blogs
-GET http://localhost:4000/api/blogs
+GET {{baseUrl}}/api/blogs
 
 ###
 # Create blog
-POST http://localhost:4000/api/blogs
+POST {{baseUrl}}/api/blogs
 Content-Type: application/json
 
 {
@@ -13,3 +15,8 @@ Content-Type: application/json
   "likes": 10,
   "userId": "6a720cfb227ffb5d3e5cde30"
 }
+
+###
+# Delete blog
+DELETE {{baseUrl}}/api/blogs/6a720d1b227ffb5d3e5cde31
+Authorization: `Bearer ${eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ik90aXM5OSIsImlkIjoiNmE3Mjg5Y2U2OGExYWFjN2NjZTkxM2I0IiwiaWF0IjoxNzg1OTY5ODMyLCJleHAiOjE3ODU5NzM0MzJ9.S858F0P-Ysnj6OUEybjd2W4UPwdergal1JIH24IlfvY}`

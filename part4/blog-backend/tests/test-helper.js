@@ -1,17 +1,17 @@
-import { Blog } from '../models/blog.js'
+import Blog from '../models/blog.js'
 import User from '../models/user.js'
 
 export const initialBlogs = [
   {
     title: 'My first blog',
     author: 'John Doe',
-    url: '',
+    url: 'www.example.com',
     likes: 7,
   },
   {
     title: 'Why is important to eat?',
     author: 'John Watz',
-    url: '',
+    url: 'www.example.com',
     likes: 12,
   },
 ]

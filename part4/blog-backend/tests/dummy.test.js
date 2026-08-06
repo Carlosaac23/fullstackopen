@@ -1,7 +1,7 @@
 import assert from 'node:assert'
 import { test, describe } from 'node:test'
 
-import { dummy, totalLikes, favoriteBlog } from '../utils/list_helper.js'
+import { dummy, totalLikes, favoriteBlog } from '../utils/list-helper.js'
 
 const blogs = [
   {

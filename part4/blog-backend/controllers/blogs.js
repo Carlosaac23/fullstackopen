@@ -1,9 +1,8 @@
 import { Router } from 'express'
-import jwt from 'jsonwebtoken'
 
-import { Blog } from '../models/blog.js'
+import Blog from '../models/blog.js'
 import User from '../models/user.js'
-import { JWT_SECRET } from '../utils/config.js'
+import { userExtractor } from '../utils/middlewares.js'
 
 const blogsRouter = Router()
 
@@ -13,15 +12,22 @@ blogsRouter.get('/', async (req, res) => {
   res.json(blogs)
 })
 
-blogsRouter.post('/', async (req, res) => {
+blogsRouter.get('/:id', async (req, res) => {
+  const { id } = req.params
+  const blog = await Blog.findById(id)
+
+  if (!blog) {
+    return res.status(404).json({ error: 'Blog not found' })
+  }
+
+  res.json(blog)
+})
+
+blogsRouter.post('/', userExtractor, async (req, res) => {
   const { title, author, url, likes } = req.body
-  const decodedToken = jwt.verify(req.token, JWT_SECRET)
+  const loggedUser = req.user
 
-  if (!decodedToken.id) return res.status(401).json({ error: 'invalid token' })
-
-  const user = await User.findById(decodedToken.id)
-
-  if (!user) return res.status(400).json({ error: 'userId missing or not valid' })
+  const user = await User.findById(loggedUser.id)
 
   if (!title || !url) return res.status(400).json({ error: 'missing title or url' })
 
@@ -52,12 +58,9 @@ blogsRouter.put('/:id', async (req, res) => {
   res.json(updatedBlog)
 })
 
-blogsRouter.delete('/:id', async (req, res) => {
+blogsRouter.delete('/:id', userExtractor, async (req, res) => {
   const { id } = req.params
-  const decodedToken = jwt.verify(req.token, JWT_SECRET)
-  if (!decodedToken.id) {
-    return res.status(401).json({ error: 'invalid token' })
-  }
+  const user = req.user
 
   const blog = await Blog.findById(id)
 
@@ -65,7 +68,7 @@ blogsRouter.delete('/:id', async (req, res) => {
     return res.status(404).json({ error: 'Blog not found' })
   }
 
-  if (blog.user.toString() !== decodedToken.id) {
+  if (blog.user.toString() !== user.id) {
     return res.status(403).json({ error: 'Not allowed to do this' })
   }
 

@@ -1,18 +1,29 @@
+import bcrypt from 'bcryptjs'
 import mongoose from 'mongoose'
 import assert from 'node:assert'
 import { test, after, beforeEach } from 'node:test'
 import supertest from 'supertest'
 
 import app from '../app.js'
-import { Blog } from '../models/blog.js'
-import { initialBlogs, blogsInDb } from './test-helper.js'
+import Blog from '../models/blog.js'
+import User from '../models/user.js'
+import { initialBlogs, blogsInDb, usersInDb } from './test-helper.js'
 
 const api = supertest(app)
 
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
 
-  await Blog.insertMany(initialBlogs)
+  let blogs = []
+  const passwordHash = await bcrypt.hash('password', 10)
+  const user = new User({ username: 'root', name: 'Superuser', passwordHash })
+
+  await user.save()
+
+  blogs = [...initialBlogs].map((blog) => ({ ...blog, user: user._id }))
+
+  await Blog.insertMany(blogs)
 })
 
 test('blogs are returned as JSON', async () => {
@@ -37,6 +48,15 @@ test('a blog has a property named id', async () => {
 })
 
 test('a valid blog can be added', async () => {
+  const usersAtStart = await usersInDb()
+  const user = usersAtStart[0]
+
+  const loggedUser = await api
+    .post('/api/login')
+    .send({ username: user.username, password: 'password' })
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
   const newBlog = {
     title: 'testing title',
     author: 'John Doe',
@@ -47,6 +67,7 @@ test('a valid blog can be added', async () => {
   await api
     .post('/api/blogs')
     .send(newBlog)
+    .set('Authorization', `Bearer ${loggedUser.body.token}`)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
@@ -58,6 +79,15 @@ test('a valid blog can be added', async () => {
 })
 
 test('if likes property is missing when creating new blog, it will be by default 0', async () => {
+  const usersAtStart = await usersInDb()
+  const user = usersAtStart[0]
+
+  const loggedUser = await api
+    .post('/api/login')
+    .send({ username: user.username, password: 'password' })
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
   const newBlog = {
     title: 'testing title',
     author: 'John Doe',
@@ -67,6 +97,7 @@ test('if likes property is missing when creating new blog, it will be by default
   await api
     .post('/api/blogs')
     .send(newBlog)
+    .set('Authorization', `Bearer ${loggedUser.body.token}`)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
@@ -78,12 +109,25 @@ test('if likes property is missing when creating new blog, it will be by default
 })
 
 test('blog without title or url is not added', async () => {
+  const usersAtStart = await usersInDb()
+  const user = usersAtStart[0]
+
+  const loggedUser = await api
+    .post('/api/login')
+    .send({ username: user.username, password: 'password' })
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
   const newBlog = {
     author: 'John Doe',
     likes: 10,
   }
 
-  await api.post('/api/blogs').send(newBlog).expect(400)
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .set('Authorization', `Bearer ${loggedUser.body.token}`)
+    .expect(400)
 
   const blogsAtEnd = await blogsInDb()
   assert.strictEqual(blogsAtEnd.length, initialBlogs.length)
@@ -118,7 +162,19 @@ test('blog can be deleted', async () => {
   const blogsAtStart = await blogsInDb()
   const blogToDelete = blogsAtStart[0]
 
-  await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+  const usersAtStart = await usersInDb()
+  const user = usersAtStart[0]
+
+  const loggedUser = await api
+    .post('/api/login')
+    .send({ username: user.username, password: 'password' })
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `Bearer ${loggedUser.body.token}`)
+    .expect(204)
 
   const blogsAtEnd = await blogsInDb()
 
