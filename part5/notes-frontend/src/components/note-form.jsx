@@ -1,18 +1,18 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 export default function NoteForm({ createNote }) {
-  const [newNote, setNewNote] = useState('');
+  const [newNote, setNewNote] = useState('')
 
   const handleNoteSubmit = e => {
-    e.preventDefault();
+    e.preventDefault()
 
     createNote({
       content: newNote,
       important: true,
-    });
+    })
 
-    setNewNote('');
-  };
+    setNewNote('')
+  }
 
   return (
     <div>
@@ -26,5 +26,5 @@ export default function NoteForm({ createNote }) {
         <button type='submit'>Save</button>
       </form>
     </div>
-  );
+  )
 }

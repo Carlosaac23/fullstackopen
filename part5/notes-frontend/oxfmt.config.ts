@@ -1,10 +1,11 @@
-import { defineConfig } from 'oxfmt';
+import { defineConfig } from 'oxfmt'
 
 export default defineConfig({
   printWidth: 80,
   singleQuote: true,
   jsxSingleQuote: true,
   arrowParens: 'avoid',
+  semi: false,
   sortImports: {
     groups: [
       'type-import',
@@ -16,4 +17,4 @@ export default defineConfig({
       'unknown',
     ],
   },
-});
+})

@@ -1,5 +1,5 @@
 export default function Notification({ message }) {
-  if (!message) return;
+  if (!message) return
 
-  return <div className='error'>{message}</div>;
+  return <div className='error'>{message}</div>
 }
