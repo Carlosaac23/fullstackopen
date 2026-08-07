@@ -26,6 +26,7 @@ export default function BlogForm({ createBlog }) {
             type='text'
             value={title}
             onChange={({ target }) => setTitle(target.value)}
+            id='title'
           />
         </label>
       </div>
@@ -46,6 +47,7 @@ export default function BlogForm({ createBlog }) {
             type='text'
             value={url}
             onChange={({ target }) => setUrl(target.value)}
+            id='url'
           />
         </label>
       </div>

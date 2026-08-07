@@ -14,7 +14,7 @@ export default function Blog({ blog, user, handleLikes, handleDelete }) {
   const toggleVisibility = () => setVisible(!visible)
 
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       {blog.title}
       <button
         style={{ marginLeft: '4px' }}
