@@ -1,0 +1,17 @@
+.noti {
+  border-radius: 5px;
+  padding: 12px 8px;
+  box-shadow: 5px 5px 8px rgba(0, 0, 0, 0.1);
+}
+
+.success {
+  border: 2px solid #22c55e;
+  color: #16a34a;
+  background-color: #f0fdf4;
+}
+
+.error {
+  border: 2px solid #ef4444;
+  color: #dc2626;
+  background-color: #fef2f2;
+}
