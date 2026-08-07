@@ -19,10 +19,15 @@ export default function NoteForm({ createNote }) {
       <h2>Create a new note</h2>
 
       <form onSubmit={handleNoteSubmit}>
-        <input
-          value={newNote}
-          onChange={({ target }) => setNewNote(target.value)}
-        />
+        <label>
+          content
+          <input
+            value={newNote}
+            onChange={({ target }) => setNewNote(target.value)}
+            placeholder='write note content here'
+          />
+        </label>
+
         <button type='submit'>Save</button>
       </form>
     </div>
