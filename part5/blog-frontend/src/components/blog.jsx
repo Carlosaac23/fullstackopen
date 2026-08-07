@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 export default function Blog({ blog, user, handleLikes, handleDelete }) {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false)
 
   const blogStyle = {
     paddingTop: 10,
@@ -9,14 +9,18 @@ export default function Blog({ blog, user, handleLikes, handleDelete }) {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5,
-  };
+  }
 
-  const toggleVisibility = () => setVisible(!visible);
+  const toggleVisibility = () => setVisible(!visible)
 
   return (
     <div style={blogStyle}>
       {blog.title}
-      <button style={{ marginLeft: '4px' }} type='button' onClick={toggleVisibility}>
+      <button
+        style={{ marginLeft: '4px' }}
+        type='button'
+        onClick={toggleVisibility}
+      >
         {visible ? 'Hide' : 'View'}
       </button>
       {visible && (
@@ -39,5 +43,5 @@ export default function Blog({ blog, user, handleLikes, handleDelete }) {
         </>
       )}
     </div>
-  );
+  )
 }

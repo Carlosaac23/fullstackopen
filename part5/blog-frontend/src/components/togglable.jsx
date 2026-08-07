@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 export default function Togglable({ children, buttonLabel }) {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(false)
 
-  const hideWhenVisible = { display: visible ? 'none' : '' };
-  const showWhenVisible = { display: visible ? '' : 'none' };
+  const hideWhenVisible = { display: visible ? 'none' : '' }
+  const showWhenVisible = { display: visible ? '' : 'none' }
 
-  const toggleVisibility = () => setVisible(!visible);
+  const toggleVisibility = () => setVisible(!visible)
 
   return (
     <div>
@@ -22,5 +22,5 @@ export default function Togglable({ children, buttonLabel }) {
         </button>
       </div>
     </div>
-  );
+  )
 }

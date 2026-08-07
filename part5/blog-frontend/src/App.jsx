@@ -1,130 +1,134 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 
-import Blog from './components/blog';
-import BlogForm from './components/blog-form';
-import LoginForm from './components/login-form';
-import Notification from './components/notification';
-import Togglable from './components/togglable';
+import Blog from './components/blog'
+import BlogForm from './components/blog-form'
+import LoginForm from './components/login-form'
+import Notification from './components/notification'
+import Togglable from './components/togglable'
 import {
   getAllBlogsService,
   createBlogService,
   updateBlogService,
   deleteBlogService,
   setToken,
-} from './services/blogs';
-import { loginService } from './services/login';
+} from './services/blogs'
+import { loginService } from './services/login'
 
 export default function App() {
-  const [blogs, setBlogs] = useState([]);
+  const [blogs, setBlogs] = useState([])
+  const [notification, setNotification] = useState(null)
 
-  const [user, setUser] = useState(null);
-  const [notification, setNotification] = useState(null);
+  const [user, setUser] = useState(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
-
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-
-      setToken(user.token);
-      setUser(user);
-    }
-  }, []);
+    return loggedUserJSON ? JSON.parse(loggedUserJSON) : null
+  })
 
   useEffect(() => {
     async function fetchBlogs() {
-      const blogs = await getAllBlogsService();
+      const blogs = await getAllBlogsService()
 
-      setBlogs(blogs);
+      setBlogs(blogs)
     }
 
-    fetchBlogs();
-  }, []);
+    fetchBlogs()
+  }, [])
 
   const login = async (credentials) => {
     try {
-      const user = await loginService(credentials);
+      const user = await loginService(credentials)
 
-      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
-      setToken(user.token);
-      setUser(user);
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+      setToken(user.token)
+      setUser(user)
     } catch (error) {
-      setNotification({ message: error.response.data.error, type: 'error' });
+      setNotification({ message: error.response.data.error, type: 'error' })
     }
-  };
+  }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogAppUser');
+    window.localStorage.removeItem('loggedBlogAppUser')
 
-    setUser(null);
-    setToken(null);
-    setNotification({ message: "You've logged out successfully", type: 'success' });
-  };
+    setUser(null)
+    setToken(null)
+    setNotification({
+      message: 'You have logged out successfully',
+      type: 'success',
+    })
+  }
 
   const createBlog = async (blogData) => {
     try {
-      const newBlog = { ...blogData, author: blogData.author || user.name };
+      const newBlog = { ...blogData, author: blogData.author || user.name }
 
-      const createdBlog = await createBlogService(newBlog);
+      const createdBlog = await createBlogService(newBlog)
 
       setNotification({
         message: `A new blog "${newBlog.title}" by ${user.name} added`,
         type: 'success',
-      });
-      setBlogs((prevBlogs) => [...prevBlogs, createdBlog]);
+      })
+      setBlogs((prevBlogs) => [...prevBlogs, createdBlog])
     } catch (error) {
-      setNotification({ message: error.response.data.error, type: 'error' });
+      setNotification({ message: error.response.data.error, type: 'error' })
     }
-  };
+  }
 
   const handleLikes = async (id) => {
-    const blog = blogs?.find((blog) => blog.id === id);
-    const updatedObject = { ...blog, likes: blog.likes + 1 };
+    const blog = blogs?.find((blog) => blog.id === id)
+    const updatedObject = { ...blog, likes: blog.likes + 1 }
 
     try {
-      const updatedBlog = await updateBlogService(id, updatedObject);
+      const updatedBlog = await updateBlogService(id, updatedObject)
 
       setBlogs((prevBlogs) =>
-        prevBlogs.map((blog) => (blog.id !== id ? blog : { ...blog, likes: updatedBlog.likes })),
-      );
+        prevBlogs.map((blog) =>
+          blog.id !== id ? blog : { ...blog, likes: updatedBlog.likes },
+        ),
+      )
     } catch (error) {
-      setNotification({ message: error.response.data.error, type: 'error' });
+      setNotification({ message: error.response.data.error, type: 'error' })
     }
-  };
+  }
 
   const handleDelete = async (id) => {
-    const blog = blogs?.find((blog) => blog.id === id);
-    const isConfirmed = window.confirm(`Remove blog "${blog.title}" by ${blog.author}?`);
+    const blog = blogs?.find((blog) => blog.id === id)
+    const isConfirmed = window.confirm(
+      `Remove blog "${blog.title}" by ${blog.author}?`,
+    )
 
-    if (!isConfirmed) return;
+    if (!isConfirmed) return
 
     try {
-      await deleteBlogService(id);
+      await deleteBlogService(id)
 
-      setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
+      setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id))
+      setNotification({ message: 'Blog deleted successfully', type: 'success' })
     } catch (error) {
-      setNotification({ message: error.response.data.error, type: 'error' });
-      console.error(error);
+      setNotification({ message: error.response.data.error, type: 'error' })
+      console.error(error)
     }
-  };
+  }
 
   const loginForm = () => (
     <Togglable buttonLabel='Login'>
       <LoginForm login={login} />
     </Togglable>
-  );
+  )
 
   const blogForm = () => (
     <Togglable buttonLabel='Create new blog'>
       <BlogForm createBlog={createBlog} />
     </Togglable>
-  );
+  )
 
-  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes);
+  const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
   return (
     <>
-      <Notification notification={notification} setNotification={setNotification} />
+      <Notification
+        notification={notification}
+        setNotification={setNotification}
+      />
 
       {!user ? (
         loginForm()
@@ -152,5 +156,5 @@ export default function App() {
         </div>
       )}
     </>
-  );
+  )
 }

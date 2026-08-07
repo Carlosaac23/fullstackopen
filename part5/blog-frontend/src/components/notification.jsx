@@ -1,17 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect } from 'react'
 
 export default function Notification({ notification, setNotification }) {
   useEffect(() => {
-    const timerId = setTimeout(() => setNotification(null), 5000);
+    const timerId = setTimeout(() => setNotification(null), 5000)
 
     return () => {
-      clearTimeout(timerId);
-    };
-  }, [notification]);
+      clearTimeout(timerId)
+    }
+  }, [notification, setNotification])
 
-  if (!notification) return null;
+  if (!notification) return null
 
-  const customStyle = notification.type === 'success' ? 'success' : 'error';
+  const customStyle = notification.type === 'success' ? 'success' : 'error'
 
-  return <div className={`noti ${customStyle}`}>{notification.message}</div>;
+  return <div className={`noti ${customStyle}`}>{notification.message}</div>
 }
