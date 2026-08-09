@@ -1,29 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Routes, Route, Link, useMatch } from 'react-router-dom'
 
 import Footer from './components/footer'
-import LoginForm from './components/login-form'
+import Home from './components/home'
 import Note from './components/note'
 import NoteForm from './components/note-form'
-import Notification from './components/notification'
-import Togglable from './components/togglable'
-import { loginService } from './services/login'
+import NoteList from './components/note-list'
 import {
   getAllNotesService,
   createNoteService,
   updateNoteService,
-  setToken,
+  deleteNoteService,
 } from './services/notes'
 
 export default function App() {
   const [notes, setNotes] = useState([])
-  const [showAll, setShowAll] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('')
-  const [user, setUser] = useState(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteAppUser')
 
-    return loggedUserJSON ? JSON.parse(loggedUserJSON) : null
-  })
-  const noteFormRef = useRef()
+  const match = useMatch('/notes/:id')
+  const note = match ? notes.find(note => note.id === match.params.id) : null
 
   useEffect(() => {
     async function fetchNotes() {
@@ -39,7 +33,6 @@ export default function App() {
     try {
       const createdNote = await createNoteService(noteObject)
 
-      noteFormRef.current.toggleVisibility()
       setNotes([...notes, createdNote])
     } catch (error) {
       console.error('addNote', error)
@@ -55,69 +48,51 @@ export default function App() {
         setNotes(notes.map(note => (note.id === id ? returnedNote : note))),
       )
       .catch(error => {
-        setErrorMessage(`Note ${note.content} was already removed from server`)
-        setTimeout(() => setErrorMessage(null), 5000)
-        setNotes(notes.filter(note => note.id !== id))
         console.error(error)
       })
   }
 
-  const login = async credentials => {
-    try {
-      const user = await loginService(credentials)
+  const handleDeleteNote = async id => {
+    await deleteNoteService(id)
 
-      window.localStorage.setItem('loggedNoteAppUser', JSON.stringify(user))
-      setToken(user.token)
-      setUser(user)
-    } catch {
-      setErrorMessage('wrong credentials')
-      setTimeout(() => setErrorMessage(null), 5000)
-    }
+    setNotes(prevBlogs => prevBlogs.filter(blog => blog.id !== id))
   }
 
-  const loginForm = () => (
-    <Togglable buttonLabel='Login'>
-      <LoginForm login={login} />
-    </Togglable>
-  )
-
-  const noteForm = () => (
-    <Togglable buttonLabel='New note' ref={noteFormRef}>
-      <NoteForm createNote={createNote} />
-    </Togglable>
-  )
-
-  const notesToShow = showAll ? notes : notes.filter(note => note.important)
+  const padding = {
+    padding: 5,
+  }
 
   return (
-    <div>
-      <h1>Notes</h1>
-      <Notification message={errorMessage} />
-
-      {!user && loginForm()}
-      {user && (
-        <div>
-          <p>{user.name} logged in</p>
-          {noteForm()}
-        </div>
-      )}
-
+    <>
       <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all'}
-        </button>
+        <Link style={padding} to='/'>
+          home
+        </Link>
+        <Link style={padding} to='/notes'>
+          notes
+        </Link>
+        <Link style={padding} to='/create'>
+          new note
+        </Link>
       </div>
-      <ul>
-        {notesToShow.map(note => (
-          <Note
-            key={note.id}
-            note={note}
-            toggleImportance={() => toggleImportanceOf(note.id)}
-          />
-        ))}
-      </ul>
+
+      <Routes>
+        <Route
+          path='/notes/:id'
+          element={
+            <Note
+              note={note}
+              toggleImportance={toggleImportanceOf}
+              deleteNote={handleDeleteNote}
+            />
+          }
+        />
+        <Route path='/notes' element={<NoteList notes={notes} />} />
+        <Route path='/create' element={<NoteForm createNote={createNote} />} />
+        <Route path='/' element={<Home />} />
+      </Routes>
 
       <Footer />
-    </div>
+    </>
   )
 }

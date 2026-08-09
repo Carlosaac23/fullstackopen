@@ -23,3 +23,10 @@ export async function updateNoteService(id, newObject) {
   const res = await axios.put(`${baseUrl}/${id}`, newObject)
   return res.data
 }
+
+export async function deleteNoteService(id) {
+  const config = { headers: { Authorization: token } }
+
+  const res = await axios.delete(`${baseUrl}/${id}`, config)
+  return res.data
+}
