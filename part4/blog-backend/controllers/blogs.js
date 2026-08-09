@@ -73,6 +73,7 @@ blogsRouter.delete('/:id', userExtractor, async (req, res) => {
   }
 
   await blog.deleteOne()
+  await User.updateOne({ _id: user.id }, { $pull: { blogs: blog.id } })
 
   res.status(204).end()
 })
