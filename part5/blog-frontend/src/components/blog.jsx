@@ -15,7 +15,7 @@ export default function Blog({ blog, user, handleLikes, handleDelete }) {
 
   return (
     <div style={blogStyle} className='blog'>
-      {blog.title}
+      <h3>{blog.title}</h3>
       <button
         style={{ marginLeft: '4px' }}
         type='button'
@@ -29,7 +29,7 @@ export default function Blog({ blog, user, handleLikes, handleDelete }) {
             {blog.url}
           </a>
           <p style={{ margin: 0 }}>
-            likes {blog.likes}{' '}
+            likes <span className='like-span'>{blog.likes}</span>{' '}
             <button type='button' onClick={() => handleLikes(blog.id)}>
               Like
             </button>

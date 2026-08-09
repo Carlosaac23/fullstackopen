@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import Blog from './components/blog'
 import BlogForm from './components/blog-form'
@@ -17,6 +17,7 @@ import { loginService } from './services/login'
 export default function App() {
   const [blogs, setBlogs] = useState([])
   const [notification, setNotification] = useState(null)
+  const blogFormRef = useRef()
 
   const [user, setUser] = useState(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
@@ -63,6 +64,7 @@ export default function App() {
 
       const createdBlog = await createBlogService(newBlog)
 
+      blogFormRef.current.toggleVisibility()
       setNotification({
         message: `A new blog "${newBlog.title}" by ${user.name} added`,
         type: 'success',
@@ -116,7 +118,7 @@ export default function App() {
   )
 
   const blogForm = () => (
-    <Togglable buttonLabel='Create new blog'>
+    <Togglable buttonLabel='Create new blog' ref={blogFormRef}>
       <BlogForm createBlog={createBlog} />
     </Togglable>
   )
