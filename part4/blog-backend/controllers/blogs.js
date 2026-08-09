@@ -14,7 +14,7 @@ blogsRouter.get('/', async (req, res) => {
 
 blogsRouter.get('/:id', async (req, res) => {
   const { id } = req.params
-  const blog = await Blog.findById(id)
+  const blog = await Blog.findById(id).populate('user', { name: 1, username: 1 })
 
   if (!blog) {
     return res.status(404).json({ error: 'Blog not found' })
@@ -34,8 +34,11 @@ blogsRouter.post('/', userExtractor, async (req, res) => {
   const blog = new Blog({ title, author, url, likes: likes || 0, user: user._id })
 
   const savedBlog = await blog.save()
+
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
+
+  await savedBlog.populate('user', { name: 1, username: 1 })
 
   res.status(201).json(savedBlog)
 })
@@ -53,7 +56,7 @@ blogsRouter.put('/:id', async (req, res) => {
       likes,
     },
     { returnDocument: 'after', runValidators: true },
-  )
+  ).populate('user', { name: 1, username: 1 })
 
   res.json(updatedBlog)
 })
