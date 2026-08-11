@@ -1,22 +1,37 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-export default function BlogForm({ createBlog }) {
+import { createBlogService } from '../services/blogs'
+
+export default function BlogForm({ user, setBlogs, setNotification }) {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const navigate = useNavigate()
 
-  const handleBlogSubmit = (e) => {
+  const handleCreateBlog = async (e) => {
     e.preventDefault()
 
-    createBlog({ title, author, url })
+    try {
+      const newBlog = { title, author: author || user.name, url }
+      const createdBlog = await createBlogService(newBlog)
 
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      setNotification({
+        message: `A new blog "${newBlog.title}" by ${user.name} added`,
+        type: 'success',
+      })
+      setBlogs((prevBlogs) => [...prevBlogs, createdBlog])
+      navigate('/')
+    } catch (error) {
+      setNotification({ message: error.response.data.error, type: 'error' })
+    }
   }
 
   return (
-    <form onSubmit={handleBlogSubmit}>
+    <form onSubmit={handleCreateBlog}>
       <h2>Add new blog</h2>
 
       <div>

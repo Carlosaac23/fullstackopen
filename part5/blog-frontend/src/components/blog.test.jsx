@@ -1,82 +1,112 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { expect, describe } from 'vitest'
 
+import { updateBlogService, deleteBlogService } from '../services/blogs'
 import Blog from './blog'
 
-describe('<Blog />', () => {
-  test('renders content', () => {
-    const blog = {
-      title: 'Test title',
-      author: 'John Doe',
-      url: 'www.johndoe.com',
-      likes: 10,
-    }
+vi.mock('../services/blogs', () => ({
+  updateBlogService: vi.fn(),
+  deleteBlogService: vi.fn(),
+}))
 
-    const { container } = render(<Blog blog={blog} />)
+const blog = {
+  id: 'abc',
+  title: 'Test title',
+  author: 'John Doe',
+  url: 'www.johndoe.com',
+  likes: 10,
+  user: {
+    username: 'johndoe',
+  },
+}
+
+const userMock = { username: 'johndoe' }
+
+const renderBlog = (props = {}) =>
+  render(
+    <MemoryRouter>
+      <Blog
+        blog={blog}
+        user={userMock}
+        setBlogs={vi.fn()}
+        setNotification={vi.fn()}
+        {...props}
+      />
+    </MemoryRouter>,
+  )
+
+describe('<Blog />', () => {
+  test('renders blog title, author, url and likes', () => {
+    const { container } = renderBlog()
 
     const div = container.querySelector('.blog')
 
     expect(div).toHaveTextContent('Test title')
-    expect(div).not.toHaveTextContent('John Doe')
-    expect(div).not.toHaveTextContent('www.johndoe.com')
-    expect(div).not.toHaveTextContent('likes')
+    expect(div).toHaveTextContent('John Doe')
+    expect(div).toHaveTextContent('www.johndoe.com')
+    expect(div).toHaveTextContent('likes')
   })
 
-  test('url and number of likes are shown when clicking view button', async () => {
-    const blog = {
-      title: 'Test title',
-      author: 'John Doe',
-      url: 'www.johndoe.com',
-      likes: 10,
-      user: {
-        username: 'johndoe',
-      },
-    }
-
-    const userMock = { username: 'johndoe' }
-
-    render(<Blog blog={blog} user={userMock} />)
-
-    expect(screen.queryByText('www.johndoe.com')).toBeNull()
-    expect(screen.queryByText(/likes/i)).toBeNull()
-
-    const user = userEvent.setup()
-    const viewButton = screen.getByText('View')
-    await user.click(viewButton)
-
-    expect(screen.getByText('www.johndoe.com')).toBeInTheDocument()
-    expect(screen.getByText(/likes/i)).toBeInTheDocument()
-  })
-
-  test('clicking two times "like" button', async () => {
-    const blog = {
-      title: 'Test title',
-      author: 'John Doe',
-      url: 'www.johndoe.com',
-      likes: 10,
-      user: {
-        username: 'johndoe',
-      },
-    }
-
-    const userMock = { username: 'johndoe' }
-    const mockHandler = vi.fn()
-
-    render(<Blog blog={blog} user={userMock} handleLikes={mockHandler} />)
+  test('shows the like button only when a user is logged in', () => {
+    renderBlog({ user: null })
 
     expect(screen.queryByText('Like')).toBeNull()
+  })
+
+  test('calls updateBlogService with the increased likes each time "like" is clicked', async () => {
+    updateBlogService.mockResolvedValue({ ...blog, likes: 11 })
+
+    renderBlog()
 
     const user = userEvent.setup()
-    const viewButton = screen.getByText('View')
-    await user.click(viewButton)
-
-    expect(screen.getByText('Like')).toBeInTheDocument()
-
     const likeButton = screen.getByText('Like')
+
     await user.click(likeButton)
     await user.click(likeButton)
 
-    expect(mockHandler).toHaveBeenCalledTimes(2)
+    expect(updateBlogService).toHaveBeenCalledTimes(2)
+    expect(updateBlogService).toHaveBeenNthCalledWith(
+      1,
+      'abc',
+      expect.objectContaining({ likes: 11 }),
+    )
+    expect(updateBlogService).toHaveBeenNthCalledWith(
+      2,
+      'abc',
+      expect.objectContaining({ likes: 11 }),
+    )
+  })
+
+  test('shows the delete button only to the blog author', () => {
+    renderBlog({ user: { username: 'someone-else' } })
+
+    expect(screen.queryByText('Delete')).toBeNull()
+
+    renderBlog()
+
+    expect(screen.getByText('Delete')).toBeInTheDocument()
+  })
+
+  test('removes the blog from the list after confirming deletion', async () => {
+    deleteBlogService.mockResolvedValue()
+
+    const setBlogsMock = vi.fn()
+    vi.spyOn(window, 'confirm').mockReturnValue(true)
+
+    renderBlog({ setBlogs: setBlogsMock })
+
+    const user = userEvent.setup()
+    await user.click(screen.getByText('Delete'))
+
+    expect(deleteBlogService).toHaveBeenCalledWith('abc')
+
+    const prevBlogs = [{ id: 'abc' }, { id: 'def' }]
+    const updater = setBlogsMock.mock.calls[0][0]
+    expect(typeof updater).toBe('function')
+    expect(updater(prevBlogs)).toEqual([{ id: 'def' }])
+
+    window.confirm.mockRestore()
   })
 })

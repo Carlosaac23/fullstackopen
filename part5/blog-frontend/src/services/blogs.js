@@ -26,6 +26,5 @@ export async function updateBlogService(id, updateData) {
 export async function deleteBlogService(id) {
   const config = { headers: { Authorization: token } }
 
-  const res = await axios.delete(`${baseUrl}/${id}`, config)
-  return res.data
+  await axios.delete(`${baseUrl}/${id}`, config)
 }
