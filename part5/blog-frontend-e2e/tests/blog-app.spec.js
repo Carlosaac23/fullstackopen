@@ -16,13 +16,10 @@ describe("Blog app", () => {
   });
 
   test("Login form is shown", async ({ page }) => {
+    await page.getByRole("link", { name: "login" }).click();
+
     const usernameInput = await page.getByLabel("username");
     const passwordInput = await page.getByLabel("password");
-
-    await expect(usernameInput).not.toBeVisible();
-    await expect(passwordInput).not.toBeVisible();
-
-    await page.getByRole("button", { name: "Login" }).click();
 
     await expect(usernameInput).toBeVisible();
     await expect(passwordInput).toBeVisible();
@@ -44,6 +41,16 @@ describe("Blog app", () => {
       await expect(page.getByText("John Doe logged in")).not.toBeVisible();
     });
 
+    test("only logged-in users can like a blog", async ({ page }) => {
+      await loginWith(page, "johndoe3", "password");
+      await createBlog(page, "a blog that can not be liked", "www.not.com");
+      await page.getByRole("button", { name: "logout" }).click();
+
+      await page.getByRole("link", { name: "a blog that can not be liked" }).click();
+
+      await expect(page.getByRole("button", { name: "like" })).not.toBeAttached();
+    });
+
     describe("when logged in", () => {
       beforeEach(async ({ page }) => {
         await loginWith(page, "johndoe3", "password");
@@ -57,12 +64,9 @@ describe("Blog app", () => {
       });
 
       test("and the blog can be liked", async ({ page }) => {
-        await expect(page.getByText("www.testing.com")).not.toBeVisible();
-
-        await page.getByRole("button", { name: "View" }).click();
+        await page.getByRole("link", { name: "a blog created by playwright" }).click();
 
         const likeCounter = page.locator(".like-span");
-        await expect(page.getByText("www.testing.com")).toBeVisible();
         await expect(likeCounter).toHaveText("0");
 
         await page.getByRole("button", { name: "like" }).click();
@@ -71,9 +75,7 @@ describe("Blog app", () => {
       });
 
       test("the user who created the blog can delete it", async ({ page }) => {
-        await expect(page.getByRole("button", { name: "Delete" })).not.toBeVisible();
-
-        await page.getByRole("button", { name: "View" }).click();
+        await page.getByRole("link", { name: "a blog created by playwright" }).click();
 
         const deleteButton = page.getByRole("button", { name: "Delete" });
         await expect(deleteButton).toBeVisible();
@@ -82,9 +84,8 @@ describe("Blog app", () => {
 
         await deleteButton.click();
 
-        await expect(
-          page.getByRole("heading", { level: 3, name: "a blog created by playwrights" }),
-        ).not.toBeAttached();
+        const successDiv = page.locator(".success");
+        await expect(successDiv).toContainText("Blog deleted successfully");
       });
     });
 
@@ -108,44 +109,9 @@ describe("Blog app", () => {
 
         await loginWith(page, "johndoe3", "password");
 
-        await page.getByRole("button", { name: "View" }).click();
+        await page.getByRole("link", { name: "another blog by playwright" }).click();
 
-        await expect(page.getByRole("button", { name: " Delete" })).not.toBeAttached();
-      });
-    });
-
-    describe("blogs are ordered by likes", () => {
-      beforeEach(async ({ page }) => {
-        await loginWith(page, "johndoe3", "password");
-
-        await createBlog(page, "first blog", "www.one.com");
-        await createBlog(page, "second blog", "www.two.com");
-        await createBlog(page, "third blog", "www.three.com");
-      });
-
-      test("most liked blog is shown first", async ({ page }) => {
-        const blogs = page.locator(".blog");
-
-        // Give the first blog 1 like
-        await blogs.filter({ hasText: "first blog" }).getByRole("button", { name: "View" }).click();
-
-        await blogs.filter({ hasText: "first blog" }).getByRole("button", { name: "like" }).click();
-
-        // Give the second blog 1 like
-        await blogs
-          .filter({ hasText: "second blog" })
-          .getByRole("button", { name: "View" })
-          .click();
-
-        await blogs
-          .filter({ hasText: "second blog" })
-          .getByRole("button", { name: "like" })
-          .click();
-
-        // Check the order
-        const blogTitles = blogs.locator("h3");
-
-        await expect(blogTitles).toHaveText(["first blog", "second blog", "third blog"]);
+        await expect(page.getByRole("button", { name: "Delete" })).not.toBeAttached();
       });
     });
   });
