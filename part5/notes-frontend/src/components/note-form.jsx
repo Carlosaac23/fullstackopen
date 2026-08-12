@@ -1,3 +1,4 @@
+import { TextField, Button } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -13,8 +14,8 @@ export default function NoteForm({ createNote }) {
       important: true,
     })
 
-    navigate('/notes')
     setNewNote('')
+    navigate('/notes')
   }
 
   return (
@@ -22,16 +23,17 @@ export default function NoteForm({ createNote }) {
       <h2>Create a new note</h2>
 
       <form onSubmit={handleNoteSubmit}>
-        <label>
-          content
-          <input
-            value={newNote}
-            onChange={({ target }) => setNewNote(target.value)}
-            placeholder='write note content here'
-          />
-        </label>
+        <TextField
+          label='note content'
+          value={newNote}
+          onChange={({ target }) => setNewNote(target.value)}
+        />
 
-        <button type='submit'>Save</button>
+        <div>
+          <Button type='submit' variant='contained' style={{ marginTop: 10 }}>
+            save
+          </Button>
+        </div>
       </form>
     </div>
   )

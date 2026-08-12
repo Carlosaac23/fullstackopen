@@ -1,3 +1,5 @@
+import { Container, AppBar, Toolbar } from '@mui/material'
+import Button from '@mui/material/Button'
 import { useEffect, useState } from 'react'
 import { Routes, Route, Link, useMatch } from 'react-router-dom'
 
@@ -6,15 +8,23 @@ import Home from './components/home'
 import Note from './components/note'
 import NoteForm from './components/note-form'
 import NoteList from './components/note-list'
+import Notification from './components/notification'
 import {
   getAllNotesService,
   createNoteService,
   updateNoteService,
   deleteNoteService,
 } from './services/notes'
+import { setToken } from './services/notes'
 
 export default function App() {
   const [notes, setNotes] = useState([])
+  const [notification, setNotification] = useState(null)
+  const [user, setUser] = useState(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteAppUser')
+
+    return loggedUserJSON ? JSON.parse(loggedUserJSON) : null
+  })
 
   const match = useMatch('/notes/:id')
   const note = match ? notes.find(note => note.id === match.params.id) : null
@@ -29,11 +39,22 @@ export default function App() {
     fetchNotes()
   }, [])
 
+  useEffect(() => {
+    if (user) {
+      setToken(user.token)
+    }
+  }, [])
+
   const createNote = async noteObject => {
     try {
       const createdNote = await createNoteService(noteObject)
 
       setNotes([...notes, createdNote])
+      setNotification({
+        message: `Note "${createdNote.content}" added!`,
+        type: 'success',
+      })
+      setTimeout(() => setNotification(null), 5000)
     } catch (error) {
       console.error('addNote', error)
     }
@@ -58,23 +79,25 @@ export default function App() {
     setNotes(prevBlogs => prevBlogs.filter(blog => blog.id !== id))
   }
 
-  const padding = {
-    padding: 5,
-  }
+  const style = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
 
   return (
-    <>
-      <div>
-        <Link style={padding} to='/'>
-          home
-        </Link>
-        <Link style={padding} to='/notes'>
-          notes
-        </Link>
-        <Link style={padding} to='/create'>
-          new note
-        </Link>
-      </div>
+    <Container>
+      <AppBar position='static'>
+        <Toolbar>
+          <Button color='inherit' component={Link} to='/' sx={style}>
+            home
+          </Button>
+          <Button color='inherit' component={Link} to='/notes' sx={style}>
+            notes
+          </Button>
+          <Button color='inherit' component={Link} to='/create' sx={style}>
+            new note
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      <Notification notification={notification} />
 
       <Routes>
         <Route
@@ -89,10 +112,10 @@ export default function App() {
         />
         <Route path='/notes' element={<NoteList notes={notes} />} />
         <Route path='/create' element={<NoteForm createNote={createNote} />} />
-        <Route path='/' element={<Home />} />
+        <Route path='/' element={<Home user={user} setUser={setUser} />} />
       </Routes>
 
       <Footer />
-    </>
+    </Container>
   )
 }

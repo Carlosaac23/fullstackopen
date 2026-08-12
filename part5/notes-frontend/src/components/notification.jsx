@@ -1,5 +1,14 @@
-export default function Notification({ message }) {
-  if (!message) return
+import { Alert } from '@mui/material'
 
-  return <div className='error'>{message}</div>
+export default function Notification({ notification }) {
+  if (!notification) return
+
+  return (
+    <Alert
+      style={{ marginTop: 10, marginBottom: 10 }}
+      severity={notification.type}
+    >
+      {notification.message}
+    </Alert>
+  )
 }
