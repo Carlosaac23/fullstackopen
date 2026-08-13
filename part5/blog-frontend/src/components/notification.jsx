@@ -1,3 +1,4 @@
+import { Alert } from '@mui/material'
 import { useEffect } from 'react'
 
 export default function Notification({ notification, setNotification }) {
@@ -11,7 +12,13 @@ export default function Notification({ notification, setNotification }) {
 
   if (!notification) return null
 
-  const customStyle = notification.type === 'success' ? 'success' : 'error'
-
-  return <div className={`noti ${customStyle}`}>{notification.message}</div>
+  return (
+    <Alert
+      style={{ marginTop: 5, marginBottom: 5 }}
+      severity={notification.type}
+      onClose={() => setNotification(null)}
+    >
+      {notification.message}
+    </Alert>
+  )
 }

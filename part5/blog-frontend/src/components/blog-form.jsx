@@ -1,3 +1,4 @@
+import { TextField, Button } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -35,39 +36,45 @@ export default function BlogForm({ user, setBlogs, setNotification }) {
       <h2>Add new blog</h2>
 
       <div>
-        <label>
-          title
-          <input
-            type='text'
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-            id='title'
-          />
-        </label>
+        <TextField
+          type='text'
+          label='Title'
+          variant='outlined'
+          size='small'
+          margin='dense'
+          value={title}
+          onChange={({ target }) => setTitle(target.value)}
+          id='title'
+        />
       </div>
       <div>
-        <label>
-          author
-          <input
-            type='text'
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
-        </label>
+        <TextField
+          type='text'
+          label='Author'
+          variant='outlined'
+          size='small'
+          margin='dense'
+          value={author}
+          onChange={({ target }) => setAuthor(target.value)}
+          id='author'
+        />
       </div>
       <div>
-        <label>
-          url
-          <input
-            type='text'
-            value={url}
-            onChange={({ target }) => setUrl(target.value)}
-            id='url'
-          />
-        </label>
+        <TextField
+          type='text'
+          label='URL'
+          variant='outlined'
+          size='small'
+          margin='dense'
+          value={url}
+          onChange={({ target }) => setUrl(target.value)}
+          id='url'
+        />
       </div>
 
-      <button type='submit'>add</button>
+      <Button type='submit' variant='contained' color='primary'>
+        Create
+      </Button>
     </form>
   )
 }

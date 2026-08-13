@@ -1,3 +1,4 @@
+import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material'
 import { useState, useEffect, useRef } from 'react'
 import { Routes, Route, Link, useMatch } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
@@ -7,7 +8,6 @@ import BlogForm from './components/blog-form'
 import BlogList from './components/blog-list'
 import LoginForm from './components/login-form'
 import Notification from './components/notification'
-import Togglable from './components/togglable'
 import { getAllBlogsService, setToken } from './services/blogs'
 import { loginService } from './services/login'
 
@@ -65,46 +65,39 @@ export default function App() {
     })
   }
 
-  const loginForm = () => (
-    <Togglable buttonLabel='Login'>
-      <LoginForm login={login} />
-    </Togglable>
-  )
-
-  const blogForm = () => (
-    <Togglable buttonLabel='Create new blog' ref={blogFormRef}>
-      <BlogForm createBlog={createBlog} />
-    </Togglable>
-  )
-
-  const padding = { padding: 5 }
-
   return (
     <>
+      <Container>
+        <AppBar position='static'>
+          <Toolbar>
+            <Typography variant='h5' component='div' sx={{ flexGrow: 1 }}>
+              Blog App
+            </Typography>
+            <Button color='inherit' component={Link} to='/'>
+              home
+            </Button>
+            {user ? (
+              <>
+                <Button color='inherit' component={Link} to='/create'>
+                  new blog
+                </Button>
+                <Button color='inherit' onClick={handleLogout}>
+                  logout{' '}
+                </Button>
+              </>
+            ) : (
+              <Button color='inherit' component={Link} to='/login'>
+                login
+              </Button>
+            )}
+          </Toolbar>
+        </AppBar>
+      </Container>
+
       <Notification
         notification={notification}
         setNotification={setNotification}
       />
-
-      <div>
-        <Link style={padding} to='/'>
-          home
-        </Link>
-        {user ? (
-          <>
-            <Link style={padding} to='/create'>
-              new blog
-            </Link>
-            <button type='button' onClick={handleLogout}>
-              logout
-            </button>
-          </>
-        ) : (
-          <Link style={padding} to='/login'>
-            login
-          </Link>
-        )}
-      </div>
 
       <Routes>
         <Route path='/' element={<BlogList blogs={blogs} user={user} />} />

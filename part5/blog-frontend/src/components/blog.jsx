@@ -1,3 +1,4 @@
+import { Container, Typography, Link, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
 import { updateBlogService, deleteBlogService } from '../services/blogs'
@@ -42,28 +43,38 @@ export default function Blog({ blog, user, setNotification, setBlogs }) {
   }
 
   return (
-    <div className='blog'>
-      <h3>
+    <Container
+      sx={{ boxShadow: 1, borderRadius: 2, padding: 2 }}
+      className='blog'
+    >
+      <Typography variant='h6' sx={{ margin: 1 }}>
         {blog?.author}: {blog?.title}
-      </h3>
+      </Typography>
 
-      <a style={{ margin: 0, display: 'block' }} href={blog?.url}>
+      <Typography sx={{ color: 'gray' }}>By {blog?.author}</Typography>
+      <Link href={blog?.url} underline='always'>
         {blog?.url}
-      </a>
-      <p style={{ margin: 0 }}>
+      </Link>
+      <Typography>
         likes <span className='like-span'>{blog?.likes}</span>{' '}
         {user && (
-          <button type='button' onClick={handleLikes}>
-            Like
-          </button>
+          <>
+            <Button
+              sx={{ marginLeft: 1, marginRight: 1 }}
+              variant='outlined'
+              color='primary'
+              onClick={handleLikes}
+            >
+              Like
+            </Button>
+            {user?.username === blog?.user?.username && (
+              <Button variant='outlined' color='error' onClick={handleDelete}>
+                Delete
+              </Button>
+            )}
+          </>
         )}
-      </p>
-      <p style={{ margin: 0 }}>Added by {blog?.author}</p>
-      {user?.username === blog?.user.username && (
-        <button type='button' onClick={handleDelete}>
-          Delete
-        </button>
-      )}
-    </div>
+      </Typography>
+    </Container>
   )
 }
