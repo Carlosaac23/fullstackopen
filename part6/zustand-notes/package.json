@@ -1,13 +1,14 @@
 {
   "name": "zustand-notes",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "vite build",
+    "dev": "vite",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "json-server -p 4000 db.json"
   },
   "dependencies": {
     "react": "^19.2.8",
@@ -18,6 +19,8 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
+    "json-server": "^1.0.0-beta.15",
+    "oxfmt": "^0.63.0",
     "oxlint": "^1.75.0",
     "vite": "^8.2.0"
   }
