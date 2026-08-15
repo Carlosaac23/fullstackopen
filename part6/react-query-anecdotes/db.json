@@ -47,8 +47,18 @@
     },
     {
       "content": "Agregando una nueva nota",
-      "votes": 0,
+      "votes": 3,
       "id": "8GcVhOW"
+    },
+    {
+      "content": "Probando notificacion",
+      "votes": 0,
+      "id": "h48Quum"
+    },
+    {
+      "content": "Probando nuevamente la notificacion",
+      "votes": 0,
+      "id": "K48SzRy"
     }
   ]
 }

@@ -20,7 +20,8 @@ export async function createAnecdote(payload) {
   const res = await fetch(baseUrl, config);
 
   if (!res.ok) {
-    throw new Error("Failed to create anecdote");
+    const error = await res.json();
+    throw new Error(error.message);
   }
 
   return await res.json();
