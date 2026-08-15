@@ -1,4 +1,4 @@
-import { useAnecdoteActions } from "../store";
+import { useAnecdoteActions } from '../stores/anecdote-store';
 
 export default function Filter() {
   const { setFilter } = useAnecdoteActions();

@@ -1,10 +1,12 @@
-export default function Notification() {
+export default function Notification({ notification }) {
+  if (!notification) return null;
+
   const style = {
-    border: "solid",
+    border: 'solid',
     padding: 10,
     borderWidth: 1,
     marginBottom: 10,
   };
 
-  return <div style={style}>render here notification...</div>;
+  return <div style={style}>{notification}</div>;
 }

@@ -1,21 +1,31 @@
-import { useAnecdoteActions, useAnecdotes } from "../store";
+import { useAnecdoteActions, useAnecdotes } from '../stores/anecdote-store';
+import { useNotification } from '../stores/notification-store';
 
 export default function AnecdoteList() {
   const anecdotes = useAnecdotes();
-  const { voteUp } = useAnecdoteActions();
+  const { voteUp, deleteStore } = useAnecdoteActions();
+  const { setNotification } = useNotification();
 
-  const vote = (id) => voteUp(id);
+  const handleVote = anecdote => {
+    voteUp(anecdote.id);
+    setNotification(`You voted for "${anecdote.content}"`, 5000);
+  };
+
+  const handleDelete = anecdote => {
+    deleteStore(anecdote.id);
+  };
+
   const sortedAnecdotes = anecdotes.toSorted((a, b) => b.votes - a.votes);
 
   return (
     <>
-      <h2>Anecdotes</h2>
-      {sortedAnecdotes.map((anecdote) => (
+      {sortedAnecdotes.map(anecdote => (
         <div key={anecdote.id}>
           <div>{anecdote.content}</div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id)}>vote</button>
+            <button onClick={() => handleVote(anecdote)}>vote</button>
+            <button onClick={() => handleDelete(anecdote)}>Delete</button>
           </div>
         </div>
       ))}
