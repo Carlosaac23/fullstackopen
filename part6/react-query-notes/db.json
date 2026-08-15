@@ -1,0 +1,55 @@
+{
+  "notes": [
+    {
+      "id": "1",
+      "content": "First note",
+      "important": false
+    },
+    {
+      "id": "2",
+      "content": "Second note",
+      "important": true
+    },
+    {
+      "content": "Third note",
+      "important": true,
+      "id": "Bq5DUUDpYKw"
+    },
+    {
+      "content": "Fourth note",
+      "important": false,
+      "id": "o4Ova70a_5Q"
+    },
+    {
+      "content": "Fifth note",
+      "important": true,
+      "id": "ZDAF2MJIw5Q"
+    },
+    {
+      "content": "Sixth note",
+      "important": false,
+      "id": "m2yIM4bMnBg"
+    },
+    {
+      "content": "Seventh note",
+      "important": true,
+      "id": "BmoYW7y7akU"
+    },
+    {
+      "content": "Eighth note",
+      "important": false,
+      "id": "oGb5Wf4-FkE"
+    },
+    {
+      "content": "Nineth note",
+      "important": true,
+      "id": "WTam8lnVcqk"
+    },
+    {
+      "content": "Tenth notew",
+      "important": true,
+      "id": "aUidmTMNHt4"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
