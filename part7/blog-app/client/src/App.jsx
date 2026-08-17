@@ -1,5 +1,5 @@
 import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { Routes, Route, Link, useMatch } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
@@ -11,56 +11,37 @@ import ErrorFallback from './components/error-fallback'
 import LoginForm from './components/login-form'
 import NotFound from './components/not-found'
 import Notification from './components/notification'
-import { getAllBlogsService, setToken } from './services/blogs'
-import { loginService } from './services/login'
+import { useAuth, useAuthActions } from './stores/auth-store'
+import { useBlogActions, useBlogs } from './stores/blog-store'
+import { useNotification } from './stores/notification-store'
 
 export default function App() {
-  const [blogs, setBlogs] = useState([])
-  const [notification, setNotification] = useState(null)
+  const { notification, setNotification } = useNotification()
+  const user = useAuth()
+  const { initialize: initializeAuth, login, logout } = useAuthActions()
+  const blogs = useBlogs()
+  const { initialize } = useBlogActions()
   const navigate = useNavigate()
   const match = useMatch('/blogs/:id')
-  const blog = match ? blogs.find((blog) => blog.id === match.params.id) : null
-
-  const [user, setUser] = useState(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
-
-    return loggedUserJSON ? JSON.parse(loggedUserJSON) : null
-  })
+  const blog = match ? blogs.find(blog => blog.id === match.params.id) : null
 
   useEffect(() => {
-    async function fetchBlogs() {
-      const blogs = await getAllBlogsService()
+    initializeAuth()
+    initialize()
+  }, [initialize, initializeAuth])
 
-      setBlogs(blogs)
-    }
-
-    fetchBlogs()
-  }, [])
-
-  useEffect(() => {
-    if (user) {
-      setToken(user.token)
-    }
-  }, [user])
-
-  const login = async (credentials) => {
+  const handleLogin = async credentials => {
     try {
-      const user = await loginService(credentials)
+      await login(credentials)
 
-      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-      setToken(user.token)
-      setUser(user)
       navigate('/')
     } catch (error) {
-      setNotification({ message: error.response.data.error, type: 'error' })
+      setNotification({ message: error.message, type: 'error' })
     }
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogAppUser')
-
-    setUser(null)
-    setToken(null)
+    logout()
     setNotification({
       message: 'You have logged out successfully',
       type: 'success',
@@ -75,6 +56,9 @@ export default function App() {
             <Typography variant='h5' component='div' sx={{ flexGrow: 1 }}>
               Blog App
             </Typography>
+
+            {user && <Typography sx={{ marginRight: 2 }}>Welcome, {user.name}!</Typography>}
+
             <Button color='inherit' component={Link} to='/'>
               home
             </Button>
@@ -100,17 +84,15 @@ export default function App() {
 
       <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
         <Routes>
-          <Route path='/' element={<BlogList blogs={blogs} user={user} />} />
-          <Route path='/login' element={<LoginForm login={login} />} />
+          <Route path='/' element={<BlogList user={user} />} />
+          <Route path='/login' element={<LoginForm login={handleLogin} />} />
           <Route
             path='/create'
-            element={<BlogForm user={user} setBlogs={setBlogs} setNotification={setNotification} />}
+            element={<BlogForm user={user} setNotification={setNotification} />}
           />
           <Route
             path='/blogs/:id'
-            element={
-              <Blog blog={blog} user={user} setNotification={setNotification} setBlogs={setBlogs} />
-            }
+            element={<Blog blog={blog} user={user} setNotification={setNotification} />}
           />
           <Route path='*' element={<NotFound />} />
         </Routes>

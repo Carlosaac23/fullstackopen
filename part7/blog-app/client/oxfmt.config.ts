@@ -4,6 +4,7 @@ export default defineConfig({
   singleQuote: true,
   jsxSingleQuote: true,
   semi: false,
+  arrowParens: 'avoid',
   sortImports: {
     groups: [
       'type-import',

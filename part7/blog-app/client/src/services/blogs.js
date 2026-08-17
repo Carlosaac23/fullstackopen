@@ -2,7 +2,7 @@ const baseUrl = '/api/blogs'
 let token = null
 
 export function setToken(newToken) {
-  token = `Bearer ${newToken}`
+  token = newToken ? `Bearer ${newToken}` : null
 }
 
 export async function getAllBlogsService() {

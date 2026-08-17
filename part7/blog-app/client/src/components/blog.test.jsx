@@ -27,13 +27,7 @@ const userMock = { username: 'johndoe' }
 const renderBlog = (props = {}) =>
   render(
     <MemoryRouter>
-      <Blog
-        blog={blog}
-        user={userMock}
-        setBlogs={vi.fn()}
-        setNotification={vi.fn()}
-        {...props}
-      />
+      <Blog blog={blog} user={userMock} setBlogs={vi.fn()} setNotification={vi.fn()} {...props} />
     </MemoryRouter>,
   )
 

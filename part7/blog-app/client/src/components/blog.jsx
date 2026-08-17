@@ -1,40 +1,31 @@
 import { Container, Typography, Link, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
-import { updateBlogService, deleteBlogService } from '../services/blogs'
+import { useBlogActions } from '../stores/blog-store'
 
-export default function Blog({ blog, user, setNotification, setBlogs }) {
+export default function Blog({ blog, user, setNotification }) {
+  const { likeBlogStore, deleteBlogStore } = useBlogActions()
   const navigate = useNavigate()
 
   const handleLikes = async () => {
-    const updatedObject = { ...blog, likes: blog.likes + 1 }
-
     try {
-      const updatedBlog = await updateBlogService(blog?.id, updatedObject)
+      likeBlogStore(blog.id)
 
-      setBlogs((prevBlogs) =>
-        prevBlogs.map((blog) =>
-          blog.id !== updatedBlog.id
-            ? blog
-            : { ...blog, likes: updatedBlog.likes },
-        ),
-      )
+      setNotification({ message: `Blog ${blog.title} liked!`, type: 'success' })
     } catch (error) {
+      console.error('error', error)
       setNotification({ message: error.response.data.error, type: 'error' })
     }
   }
 
   const handleDelete = async () => {
-    const isConfirmed = window.confirm(
-      `Remove blog "${blog?.title}" by ${blog?.author}?`,
-    )
+    const isConfirmed = window.confirm(`Remove blog "${blog?.title}" by ${blog?.author}?`)
 
     if (!isConfirmed) return
 
     try {
-      await deleteBlogService(blog?.id)
+      await deleteBlogStore(blog.id)
 
-      setBlogs((prevBlogs) => prevBlogs.filter((item) => item.id !== blog?.id))
       setNotification({ message: 'Blog deleted successfully', type: 'success' })
       navigate('/')
     } catch (error) {
@@ -43,10 +34,7 @@ export default function Blog({ blog, user, setNotification, setBlogs }) {
   }
 
   return (
-    <Container
-      sx={{ boxShadow: 1, borderRadius: 2, padding: 2 }}
-      className='blog'
-    >
+    <Container sx={{ boxShadow: 1, borderRadius: 2, padding: 2 }} className='blog'>
       <Typography variant='h6' sx={{ margin: 1 }}>
         {blog?.author}: {blog?.title}
       </Typography>

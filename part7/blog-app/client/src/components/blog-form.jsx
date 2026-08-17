@@ -2,29 +2,31 @@ import { TextField, Button } from '@mui/material'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { createBlogService } from '../services/blogs'
+import { useBlogActions } from '../stores/blog-store'
 
-export default function BlogForm({ user, setBlogs, setNotification }) {
+export default function BlogForm({ user, setNotification }) {
+  const { addBlogStore } = useBlogActions()
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const navigate = useNavigate()
 
-  const handleCreateBlog = async (e) => {
+  const handleCreateBlog = async e => {
     e.preventDefault()
 
     try {
       const newBlog = { title, author: author || user.name, url }
-      const createdBlog = await createBlogService(newBlog)
 
-      setTitle('')
-      setAuthor('')
-      setUrl('')
+      addBlogStore(newBlog)
+
       setNotification({
         message: `A new blog "${newBlog.title}" by ${user.name} added`,
         type: 'success',
       })
-      setBlogs((prevBlogs) => [...prevBlogs, createdBlog])
+
+      setTitle('')
+      setAuthor('')
+      setUrl('')
       navigate('/')
     } catch (error) {
       setNotification({ message: error.response.data.error, type: 'error' })

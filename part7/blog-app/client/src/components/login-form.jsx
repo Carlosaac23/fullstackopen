@@ -5,7 +5,7 @@ export default function LoginForm({ login }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleLogin = (e) => {
+  const handleLogin = e => {
     e.preventDefault()
 
     login({ username, password })

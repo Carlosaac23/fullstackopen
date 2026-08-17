@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom'
 
-export default function BlogList({ blogs, user }) {
+import { useBlogs } from '../stores/blog-store'
+
+export default function BlogList({ user }) {
+  const blogs = useBlogs()
   const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
 
   return (
@@ -10,7 +13,7 @@ export default function BlogList({ blogs, user }) {
       {user && <p>{user.name} logged in </p>}
 
       <ul>
-        {sortedBlogs.map((blog) => (
+        {sortedBlogs.map(blog => (
           <li key={blog.id}>
             <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
           </li>
