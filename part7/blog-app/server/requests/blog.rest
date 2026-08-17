@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:4000
+
+# Get blogs
+GET {{baseUrl}}/api/blogs
+
+###
+# Create blog
+POST {{baseUrl}}/api/blogs
+Content-Type: application/json
+Authorization: Bearer {{$dotenv JWT_TOKEN}}
+
+{
+  "title": "My first blog",
+  "author": "Carlos Acosta",
+  "url": "www.example.com",
+  "likes": 10
+}
+
+###
+# Delete blog
+DELETE {{baseUrl}}/api/blogs/6a78c3c472cd7416e4f03935
+Authorization: Bearer {{$dotenv JWT_TOKEN}}
