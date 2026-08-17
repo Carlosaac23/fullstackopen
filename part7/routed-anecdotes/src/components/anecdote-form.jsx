@@ -1,0 +1,55 @@
+import { useNavigate } from "react-router-dom";
+import { useAnecdotes, useField } from "../hooks";
+
+export default function AnecdoteForm() {
+  const { addAnecdote } = useAnecdotes();
+  const content = useField("text");
+  const author = useField("text");
+  const info = useField("text");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    await addAnecdote({
+      content: content.inputProps.value,
+      author: author.inputProps.value,
+      info: `https://${info.inputProps.value}`,
+      votes: 0,
+    });
+
+    navigate("/");
+  };
+
+  const handleReset = (e) => {
+    e.preventDefault();
+
+    content.reset();
+    author.reset();
+    info.reset();
+  };
+
+  return (
+    <div>
+      <h2>create a new anecdote</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          content
+          <input {...content.inputProps} />
+        </div>
+        <div>
+          author
+          <input {...author.inputProps} />
+        </div>
+        <div>
+          url for more info
+          <input {...info.inputProps} />
+        </div>
+        <button>create</button>
+        <button type="reset" onClick={handleReset}>
+          reset
+        </button>
+      </form>
+    </div>
+  );
+}
