@@ -61,3 +61,31 @@ export async function deleteBlogService(id) {
     throw new Error(errorMsg.error)
   }
 }
+
+// Comments
+export async function createCommentService(id, payload) {
+  const config = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  }
+
+  const res = await fetch(`${baseUrl}/${id}/comments`, config)
+
+  if (!res.ok) {
+    const errorMsg = await res.json()
+    throw new Error(errorMsg.error)
+  }
+
+  return await res.json()
+}
+
+export async function getAllCommentsFromBlogService(id) {
+  const res = await fetch(`${baseUrl}/${id}/comments`)
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch comments')
+  }
+
+  return await res.json()
+}

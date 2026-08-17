@@ -11,24 +11,29 @@ import ErrorFallback from './components/error-fallback'
 import LoginForm from './components/login-form'
 import NotFound from './components/not-found'
 import Notification from './components/notification'
+import User from './components/user'
+import UserList from './components/user-list'
 import { useAuth, useAuthActions } from './stores/auth-store'
 import { useBlogActions, useBlogs } from './stores/blog-store'
 import { useNotification } from './stores/notification-store'
+import { useUserActions } from './stores/user-store'
 
 export default function App() {
   const { notification, setNotification } = useNotification()
-  const user = useAuth()
   const { initialize: initializeAuth, login, logout } = useAuthActions()
+  const { initialize: initializeBlogs } = useBlogActions()
+  const { initialize: initializeUsers } = useUserActions()
+  const user = useAuth()
   const blogs = useBlogs()
-  const { initialize } = useBlogActions()
+  const blogMatch = useMatch('/blogs/:id')
+  const blog = blogMatch ? blogs.find(blog => blog.id === blogMatch.params.id) : null
   const navigate = useNavigate()
-  const match = useMatch('/blogs/:id')
-  const blog = match ? blogs.find(blog => blog.id === match.params.id) : null
 
   useEffect(() => {
     initializeAuth()
-    initialize()
-  }, [initialize, initializeAuth])
+    initializeBlogs()
+    initializeUsers()
+  }, [initializeBlogs, initializeAuth, initializeUsers])
 
   const handleLogin = async credentials => {
     try {
@@ -60,7 +65,10 @@ export default function App() {
             {user && <Typography sx={{ marginRight: 2 }}>Welcome, {user.name}!</Typography>}
 
             <Button color='inherit' component={Link} to='/'>
-              home
+              blogs
+            </Button>
+            <Button color='inherit' component={Link} to='/users'>
+              users
             </Button>
             {user ? (
               <>
@@ -85,6 +93,7 @@ export default function App() {
       <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => window.location.reload()}>
         <Routes>
           <Route path='/' element={<BlogList user={user} />} />
+          <Route path='/users' element={<UserList />} />
           <Route path='/login' element={<LoginForm login={handleLogin} />} />
           <Route
             path='/create'
@@ -94,6 +103,7 @@ export default function App() {
             path='/blogs/:id'
             element={<Blog blog={blog} user={user} setNotification={setNotification} />}
           />
+          <Route path='/users/:id' element={<User />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </ErrorBoundary>

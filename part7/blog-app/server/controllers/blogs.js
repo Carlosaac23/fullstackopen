@@ -81,4 +81,36 @@ blogsRouter.delete('/:id', userExtractor, async (req, res) => {
   res.status(204).end()
 })
 
+// COMMENTS
+blogsRouter.post('/:id/comments', async (req, res) => {
+  const { id } = req.params
+  const { comment } = req.body
+
+  if (!comment || comment.trim() === '') {
+    return res.status(400).json({ error: 'Comment is required' })
+  }
+
+  const blog = await Blog.findById(id)
+
+  if (!blog) {
+    return res.status(404).json({ error: 'Blog not found' })
+  }
+
+  blog.comments = blog.comments.concat(comment)
+  await blog.save()
+
+  res.status(201).json(blog)
+})
+
+blogsRouter.get('/:id/comments', async (req, res) => {
+  const { id } = req.params
+  const blog = await Blog.findById(id)
+
+  if (!blog) {
+    return res.status(404).json({ error: 'Blog not found' })
+  }
+
+  res.json(blog.comments ?? [])
+})
+
 export default blogsRouter

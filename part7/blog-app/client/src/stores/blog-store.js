@@ -2,6 +2,7 @@ import { create } from 'zustand'
 
 import {
   createBlogService,
+  createCommentService,
   deleteBlogService,
   getAllBlogsService,
   updateBlogService,
@@ -19,6 +20,13 @@ const useBlogStore = create((set, get) => ({
       const addedBlog = await createBlogService(blog)
 
       set(state => ({ blogs: [...state.blogs, addedBlog] }))
+    },
+    addCommentStore: async (id, comment) => {
+      const updatedBlog = await createCommentService(id, comment)
+
+      set(state => ({
+        blogs: state.blogs.map(blog => (blog.id === updatedBlog.id ? updatedBlog : blog)),
+      }))
     },
     likeBlogStore: async id => {
       const blog = get().blogs.find(blog => blog.id === id)
