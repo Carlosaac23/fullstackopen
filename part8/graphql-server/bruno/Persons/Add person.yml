@@ -1,0 +1,36 @@
+info:
+  name: Add person
+  type: graphql
+  seq: 1
+
+graphql:
+  method: POST
+  url: "{{BASE_URL}}"
+  body:
+    query: |
+      mutation AddPerson($name: String!, $phone: String, $street: String!, $city: String!) {
+        addPerson(name: $name, phone: $phone, street: $street, city: $city) {
+          id
+          name
+          phone
+          address {
+            street
+            city
+          }
+        }
+      }
+    variables: |-
+      {
+        "name": "Carlos Acosta",
+        "phone": "3007410161",
+        "street": "Cra 16 #9A-70",
+        "city": "Valledupar"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
