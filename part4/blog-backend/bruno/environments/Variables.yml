@@ -1,0 +1,8 @@
+name: Variables
+variables:
+  - name: BASE_URL
+    value: http://localhost:4000
+  - name: authToken
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNhcmxvc2FhYzIzIiwiaWQiOiI2YTcyMGNmYjIyN2ZmYjVkM2U1Y2RlMzAiLCJpYXQiOjE3ODU5Njc0NTYsImV4cCI6MTc4NTk3MTA1Nn0.tBVHeQAGftmQfi0yuBUdJszHzB6bfkXu1zqxZXrUQAU
+  - name: blogId
+    value: 6a73b723176cabf902c6c970
