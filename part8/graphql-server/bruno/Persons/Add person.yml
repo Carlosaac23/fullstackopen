@@ -6,6 +6,9 @@ info:
 graphql:
   method: POST
   url: "{{BASE_URL}}"
+  headers:
+    - name: Authorization
+      value: Bearer {{authToken}}
   body:
     query: |
       mutation AddPerson($name: String!, $phone: String, $street: String!, $city: String!) {
