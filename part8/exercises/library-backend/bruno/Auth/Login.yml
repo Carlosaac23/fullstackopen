@@ -1,0 +1,36 @@
+info:
+  name: Login
+  type: graphql
+  seq: 2
+
+graphql:
+  method: POST
+  url: "{{BASE_URL}}"
+  body:
+    query: |-
+      mutation Login($username: String!, $password: String!) {
+        login(username: $username, password: $password) {
+          value
+        }
+      }
+    variables: |-
+      {
+        "username": "carlosaac23",
+        "password": "password"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200 && res.body) {
+          bru.setVar('authToken', res.body.data.login.value)
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

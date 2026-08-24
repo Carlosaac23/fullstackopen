@@ -1,0 +1,38 @@
+info:
+  name: Create book
+  type: graphql
+  seq: 5
+
+graphql:
+  method: POST
+  url: "{{BASE_URL}}"
+  headers:
+    - name: Authorization
+      value: Bearer {{authToken}}
+  body:
+    query: |-
+      mutation CreateBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!) {
+        addBook(title: $title, author: $author, published: $published, genres: $genres) {
+          id
+          title
+          author {
+            name
+          }
+          published
+          genres
+        }
+      }
+    variables: |-
+      {
+        "title": "At the Mountains of Madness",
+        "author": "HP Lovecraft",
+        "published": 1931,
+        "genres": ["horror", "lost-world", "lovecraftian-horror"]
+      }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

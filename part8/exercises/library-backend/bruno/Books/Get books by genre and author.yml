@@ -1,0 +1,30 @@
+info:
+  name: Get books by genre and author
+  type: graphql
+  seq: 4
+
+graphql:
+  method: POST
+  url: "{{BASE_URL}}"
+  body:
+    query: |-
+      query AllBooks($author: String, $genre: String) {
+        allBooks(author: $author, genre: $genre) {
+          title
+          published
+          genres
+        }
+      }
+    variables: |-
+      {
+        "author": "Robert Martin",
+        "genre": "design"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

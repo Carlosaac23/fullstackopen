@@ -1,0 +1,32 @@
+info:
+  name: Get books
+  type: graphql
+  seq: 1
+
+graphql:
+  method: POST
+  url: "{{BASE_URL}}"
+  body:
+    query: |-
+      query AllBooks {
+        allBooks {
+          title
+          author {
+            name
+          }
+          published
+          genres
+        }
+      }
+    variables: |-
+      {
+        "author": "refactoring"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

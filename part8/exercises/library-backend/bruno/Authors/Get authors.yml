@@ -1,0 +1,26 @@
+info:
+  name: Get authors
+  type: graphql
+  seq: 1
+
+graphql:
+  method: POST
+  url: "{{BASE_URL}}"
+  body:
+    query: |-
+      query {
+        allAuthors {
+          id
+          name
+          born
+          bookCount
+        }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
