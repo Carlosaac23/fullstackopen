@@ -28,6 +28,7 @@ export const resolvers = {
       return await Book.find(filter).populate('author');
     },
     allAuthors: async () => await Author.find({}),
+    me: async (root, args, { currentUser }) => currentUser,
   },
   Author: {
     bookCount: async author => {
