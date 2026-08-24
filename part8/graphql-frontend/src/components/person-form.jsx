@@ -10,14 +10,24 @@ export default function PersonForm({ setError }) {
   const [city, setCity] = useState("");
 
   const [createPerson] = useMutation(CREATE_PERSON, {
-    refetchQueries: [{ query: ALL_PERSONS }],
     onError: (error) => setError(error.message),
+    update: (cache, res) => {
+      cache.updateQuery({ query: ALL_PERSONS }, ({ allPersons }) => {
+        return { allPersons: [...allPersons, res.data.addPerson] };
+      });
+    },
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    createPerson({ variables: { name, phone, street, city } });
+    try {
+      await createPerson({
+        variables: { name, phone: phone.length > 0 ? phone : undefined, street, city },
+      });
+    } catch (error) {
+      setError(error.message);
+    }
 
     setName("");
     setPhone("");

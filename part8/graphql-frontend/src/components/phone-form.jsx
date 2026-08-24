@@ -14,10 +14,14 @@ export default function PhoneForm({ setError }) {
     },
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    changeNumber({ variables: { name, phone } });
+    try {
+      await changeNumber({ variables: { name, phone } });
+    } catch (error) {
+      setError(error.message);
+    }
 
     setName("");
     setPhone("");
