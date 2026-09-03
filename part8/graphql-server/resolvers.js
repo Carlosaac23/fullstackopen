@@ -1,17 +1,21 @@
-import { GraphQLError } from "graphql";
+import { GraphQLError, subscribe } from "graphql";
 import jwt from "jsonwebtoken";
 import Person from "./models/Person.js";
 import User from "./models/User.js";
+import { PubSub } from "graphql-subscriptions";
+
+const pubsub = new PubSub();
 
 export const resolvers = {
   Query: {
     personCount: async () => Person.collection.countDocuments(),
     allPersons: async (root, args) => {
+      console.log("Person.find");
       if (!args.phone) {
-        return await Person.find({});
+        return await Person.find({}).populate("friendOf");
       }
 
-      return await Person.find({ phone: { $exists: args.phone === "YES" } });
+      return await Person.find({ phone: { $exists: args.phone === "YES" } }).populate("friendOf");
     },
     findPerson: async (root, args) => Person.findOne({ name: args.name }),
     me: (root, args, context) => {
@@ -24,6 +28,11 @@ export const resolvers = {
         street,
         city,
       };
+    },
+    friendOf: async (root) => {
+      console.log("User.find");
+      const friends = await User.find({ friends: { $in: [root._id] } });
+      return friends;
     },
   },
   Mutation: {
@@ -62,6 +71,8 @@ export const resolvers = {
           },
         });
       }
+
+      pubsub.publish("PERSON_ADDED", { personAdded: person });
 
       return person;
     },
@@ -148,6 +159,11 @@ export const resolvers = {
 
       await currentUser.save();
       return currentUser;
+    },
+  },
+  Subscription: {
+    personAdded: {
+      subscribe: () => pubsub.asyncIterableIterator("PERSON_ADDED"),
     },
   },
 };
