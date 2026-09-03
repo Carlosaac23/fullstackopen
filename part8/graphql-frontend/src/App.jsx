@@ -1,11 +1,12 @@
-import { useApolloClient, useQuery } from "@apollo/client/react";
+import { useApolloClient, useQuery, useSubscription } from "@apollo/client/react";
 import Persons from "./components/persons";
 import PersonForm from "./components/person-form";
 import Notification from "./components/notification";
 import { useState } from "react";
 import PhoneForm from "./components/phone-form";
 import LoginForm from "./components/login-form";
-import { ALL_PERSONS } from "./queries";
+import { ALL_PERSONS, PERSON_ADDED } from "./queries";
+import { addPersonToCache } from "./utils/apollo-cache";
 
 export default function App() {
   const [token, setToken] = useState(localStorage.getItem("phonebook-user-token"));
@@ -13,6 +14,14 @@ export default function App() {
   const { data, loading: isLoading } = useQuery(ALL_PERSONS);
   const persons = data?.allPersons;
   const client = useApolloClient();
+
+  useSubscription(PERSON_ADDED, {
+    onData: ({ data }) => {
+      const addedPerson = data.data.personAdded;
+      notify(`${addedPerson.name} added`);
+      addPersonToCache(client.cache, addedPerson);
+    },
+  });
 
   if (isLoading) {
     return <div>Loading...</div>;
