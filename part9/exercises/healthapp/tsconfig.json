@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmit": true,
+    "types": ["node"],
+    // "moduleResolution": "bundler",
+    // "module": "esnext"
+    "allowImportingTsExtensions": true
+  }
+}
