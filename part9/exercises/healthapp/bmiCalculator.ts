@@ -19,7 +19,7 @@ function parseArguments(args: string[]): Values {
   }
 }
 
-function calculateBmi(height: number, weight: number): string | undefined {
+export function calculateBmi(height: number, weight: number): string | undefined {
   if (height === 0) return 'Can"t divide by 0!';
 
   // Convert height in cm to m
@@ -42,13 +42,17 @@ function calculateBmi(height: number, weight: number): string | undefined {
     return "Obese (Class II)";
   } else if (BMI >= 40.0) {
     return "Obese (Class III)";
+  } else {
+    return undefined;
   }
 }
 
 try {
-  const { height, weight } = parseArguments(process.argv);
+  if (process.argv[1] === import.meta.filename) {
+    const { height, weight } = parseArguments(process.argv);
 
-  console.log(calculateBmi(height, weight));
+    console.log(calculateBmi(height, weight));
+  }
 } catch (error: unknown) {
   let errorMessage = "Something went wrong: ";
   if (error instanceof Error) {
