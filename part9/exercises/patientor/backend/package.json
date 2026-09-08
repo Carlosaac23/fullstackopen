@@ -8,8 +8,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.ts",
-    "dev": "concurrently \"tsc -w\" \"node --watch src/index.ts\"",
+    "start": "node index.ts",
+    "dev": "concurrently \"tsc -w\" \"node --watch index.ts\"",
     "lint": "oxlint"
   },
   "dependencies": {
@@ -20,6 +20,7 @@
     "concurrently": "^10.0.5",
     "oxfmt": "^0.66.0",
     "oxlint": "^1.81.0",
+    "oxlint-tsgolint": "^7.0.2001",
     "typescript": "^7.0.2"
   }
 }
