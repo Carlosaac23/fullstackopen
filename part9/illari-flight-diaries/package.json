@@ -11,7 +11,8 @@
     "tsc": "tsc",
     "start": "node --experimental-transform-types index.ts",
     "dev": "concurrently \"tsc --watch\" \"node --watch --experimental-transform-types index.ts \"",
-    "lint": "oxlint"
+    "lint": "oxlint",
+    "fmt": "oxfmt --check"
   },
   "dependencies": {
     "express": "^5.2.1"
