@@ -1,8 +1,18 @@
 import { v1 as uuid } from 'uuid';
-import type { NewPatient } from '../types.ts';
+import type { NewPatient, Patient } from '../types.ts';
 import { patients } from '../../data/patients.ts';
 
-export function addPatient(patient: NewPatient): NewPatient {
+export function getNonSensitivePatients() {
+  return patients.map(({ id, name, dateOfBirth, gender, occupation }) => ({
+    id,
+    name,
+    dateOfBirth,
+    gender,
+    occupation,
+  }));
+}
+
+export function addPatient(patient: NewPatient): Patient {
   const addedPatient = {
     id: uuid(),
     ...patient,
