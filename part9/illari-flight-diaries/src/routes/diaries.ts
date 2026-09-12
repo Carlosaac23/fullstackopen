@@ -24,7 +24,7 @@ router.get('/:id', (req: Request, res: Response) => {
   }
 });
 
-function newDiaryParser(req: Request, res: Response, next: NextFunction) {
+function newDiaryParser(req: Request, _res: Response, next: NextFunction) {
   try {
     NewEntrySchema.parse(req.body);
     next();
