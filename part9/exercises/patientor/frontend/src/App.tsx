@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
-import { Button, Divider, Container, Typography } from "@mui/material";
+import { Button, Divider, Container, Typography } from '@mui/material';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
 
-import { patientsApiBaseUrl } from "./constants";
-import { Patient } from "./types";
-
-import patientService from "./services/patients";
-import PatientListPage from "./components/PatientListPage";
+import PatientDetailPage from './components/PatientDetailPage';
+import PatientListPage from './components/PatientListPage';
+import { patientsApiBaseUrl } from './constants';
+import patientService from './services/patients';
+import { Patient } from './types';
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -17,6 +17,7 @@ const App = () => {
 
     const fetchPatientList = async () => {
       const patients = await patientService.getAll();
+      console.log('Fetched patients:', patients);
       setPatients(patients);
     };
     void fetchPatientList();
@@ -26,7 +27,7 @@ const App = () => {
     <div className="App">
       <Router>
         <Container>
-          <Typography variant="h3" sx={{ marginBottom: "0.5em" }}>
+          <Typography variant="h3" sx={{ marginBottom: '0.5em' }}>
             Patientor
           </Typography>
           <Button component={Link} to="/" variant="contained" color="primary">
@@ -38,6 +39,7 @@ const App = () => {
               path="/"
               element={<PatientListPage patients={patients} setPatients={setPatients} />}
             />
+            <Route path="/patients/:id" element={<PatientDetailPage />} />
           </Routes>
         </Container>
       </Router>

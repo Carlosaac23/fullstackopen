@@ -1,1 +1,1 @@
-export const patientsApiBaseUrl = "/api/patients";
+export const patientsApiBaseUrl = '/api/patients';
