@@ -12,6 +12,10 @@ export function getNonSensitivePatients() {
   }));
 }
 
+export function getPatientById(id: string): Patient | undefined {
+  return patients.find(patient => patient.id === id);
+}
+
 export function addPatient(patient: NewPatient): Patient {
   const addedPatient = {
     id: uuid(),

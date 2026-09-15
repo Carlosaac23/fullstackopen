@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 import { z } from 'zod';
-import { getNonSensitivePatients, addPatient } from '../services/patients.ts';
+import { getNonSensitivePatients, getPatientById, addPatient } from '../services/patients.ts';
 import {
   NewPatientSchema,
   type NonSensitivePatient,
@@ -13,6 +13,17 @@ const router = Router();
 
 router.get('/', (_req: Request, res: Response<NonSensitivePatient[]>) => {
   res.send(getNonSensitivePatients());
+});
+
+router.get('/:id', (req: Request<{ id: string }>, res: Response<Patient | { error: string }>) => {
+  const { id } = req.params;
+  const patient = getPatientById(id);
+
+  if (patient) {
+    res.send(patient);
+  } else {
+    res.status(404).send({ error: 'Patient not found' });
+  }
 });
 
 function newPatientParser(req: Request, _res: Response, next: NextFunction) {
