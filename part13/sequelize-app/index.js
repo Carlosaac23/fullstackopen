@@ -1,63 +1,19 @@
-import { Sequelize, Model, DataTypes } from "sequelize";
 import express from "express";
+import { env } from "./utils/config.js";
+import { connectToDatabase } from "./utils/db.js";
+import notesRouter from "./controllers/notes.js";
 
 const app = express();
 
 app.use(express.json());
 
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: "postgres",
-});
+app.use("/api/notes", notesRouter);
 
-class Note extends Model {}
-Note.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    content: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-    important: {
-      type: DataTypes.BOOLEAN,
-    },
-    date: {
-      type: DataTypes.DATE,
-    },
-  },
-  {
-    sequelize,
-    underscored: true,
-    timestamps: false,
-    modelName: "note",
-  },
-);
+async function start() {
+  await connectToDatabase();
+  app.listen(env.PORT, () => {
+    console.log(`Server running on port ${env.PORT}`);
+  });
+}
 
-app.get("/api/notes", async (req, res) => {
-  const notes = await Note.findAll();
-
-  res.json(notes);
-});
-
-app.post("/api/notes", async (req, res) => {
-  try {
-    const note = await Note.create({
-      ...req.body,
-      important: req.body.important || false,
-      date: new Date(),
-    });
-
-    res.json(note);
-  } catch (error) {
-    return res.status(400).json({ error });
-  }
-});
-
-const PORT = process.env.PORT || 8000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+start();
