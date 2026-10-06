@@ -1,5 +1,12 @@
 import { Note } from "./note.js";
+import { User } from "./user.js";
 
-Note.sync();
+User.hasMany(Note);
+Note.belongsTo(User);
 
-export { Note };
+async function syncModels() {
+  await Note.sync({ alter: true });
+  await User.sync({ alter: true });
+}
+
+export { Note, User, syncModels };

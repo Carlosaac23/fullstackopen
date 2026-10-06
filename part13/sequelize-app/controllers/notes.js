@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Note } from "../models/index.js";
+import { Note, User } from "../models/index.js";
 
 const router = Router();
 
@@ -22,10 +22,12 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
+    const user = await User.findOne();
     const note = await Note.create({
       ...req.body,
       important: req.body.important || false,
       date: new Date(),
+      userId: user.id,
     });
 
     res.json(note);
